@@ -189,7 +189,7 @@
     </div>
     <div class="dlg-foot">
       <span id="dlgHint">填好内容，右边实时预览</span>
-      <button class="gen" id="btnGen">保存</button>
+      <button class="gen" id="btnGen">保存并上线</button>
     </div>
   </div>
 </div>
@@ -812,9 +812,9 @@
       var hit = DB.cards.filter(function(x){ return x.id === editId; })[0];
       if (hit){ hit.f = f; hit.title = title; hit.pwd = cpwd; hit.ts = Date.now(); save(DB); }
       $('editMask').classList.remove('show');
-      toast(ROLE === 'admin' ? '已保存' : '已保存，正在上线…', 2800);
+      toast(ROLE === 'admin' ? '已保存，正在更新上线…' : '已保存，正在上线…', 2800);
       render();
-      autoPub(hit);
+      autoPub(hit, true);
       return;
     }
     var used = DB.cards.map(function(x){ return x.slug; });
@@ -825,8 +825,8 @@
     $('editMask').classList.remove('show');
     render();
     var nc = DB.cards[0];
-    toast(ROLE === 'admin' ? '已保存到本地，点卡片上的「发布」才有公开链接' : '已保存，正在上线…', 3200);
-    autoPub(nc);
+    toast(ROLE === 'admin' ? '已保存，正在发布上线…' : '已保存，正在上线…', 3200);
+    autoPub(nc, false);
   });
 
   var unlockCard = null;
@@ -850,13 +850,13 @@
   });
   $('cPwdInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') $('cPwdOk').click(); });
 
-  function autoPub(card){
-    if (ROLE === 'admin' || !card) return;
+  function autoPub(card, quiet){
+    if (!card) return;
     if (!DB.set || !DB.set.repo || !DB.set.token){
-      toast('已保存。这台电脑没配授权码，需要管理端来点发布', 4200);
+      toast('已保存。这台电脑没配授权码，还没上线，需要先填发布设置', 4200);
       return;
     }
-    publish(card, null);
+    publish(card, null, quiet);
   }
 
   function render(){
@@ -874,6 +874,7 @@
       var pre = (TPL[c.tpl] || {}).pre || 'r/';
       var meta = '<span>' + esc(tplName) + '</span><span>' + dateOf(c.ts) + ' 建</span>';
       if (c.published) meta += '<span>已发布</span>';
+      else meta += '<span>未发布</span>';
       var ops = '';
       if (ROLE === 'admin'){
         ops = '<button data-a="edit">编辑</button>' +
@@ -898,9 +899,7 @@
       var op = box.querySelector('[data-a=open]');
       if (op) op.onclick = function(){ window.open(c.published, '_blank'); };
       var cp = box.querySelector('[data-a=copy]');
-      if (cp) cp.onclick = function(){
-        if (navigator.clipboard) navigator.clipboard.writeText(c.published).then(function(){ toast('已复制'); });
-      };
+      if (cp) cp.onclick = function(){ copyText(c.published, '已复制'); };
       var dl = box.querySelector('[data-a=del]');
       if (dl) dl.onclick = function(){
         if (!confirm('删除后本地记录会消失，已发布的网页要自己去 GitHub 删。确定？')) return;
@@ -949,7 +948,7 @@
     });
   }
 
-  function publish(card, btn){
+  function publish(card, btn, quiet){
     var s = DB.set;
     if (!s.repo || !s.token){
       $('setRepo').value = s.repo || '';
@@ -986,10 +985,11 @@
       card.published = url; card.ts = Date.now();
       save(DB);
       if (btn){ btn.disabled = false; btn.textContent = old; }
+      render();
+      if (quiet){ toast('内容已更新上线，链接没变'); return; }
       $('resUrl').value = url;
       $('resOpen').onclick = function(){ window.open(url, '_blank'); };
       $('mResult').classList.add('show');
-      render();
     }).catch(function(e){
       if (btn){ btn.disabled = false; btn.textContent = old; }
       toast('发布失败：' + (e.message || e), 4200);
@@ -1064,13 +1064,27 @@
     toast('密码已改');
   });
 
+  function copyText(txt, okMsg){
+    var fallback = function(){
+      try{
+        var ta = document.createElement('textarea');
+        ta.value = txt; ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0';
+        document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, 9999);
+        var done = document.execCommand('copy');
+        document.body.removeChild(ta);
+        toast(done ? (okMsg || '已复制') : '没复制成功，长按链接手动复制');
+      }catch(e){ toast('没复制成功，长按链接手动复制'); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ toast(okMsg || '已复制'); }).catch(fallback);
+    } else { fallback(); }
+  }
+
   $('resClose').addEventListener('click', function(){ $('mResult').classList.remove('show'); });
   $('resCopy').addEventListener('click', function(){
     var el = $('resUrl');
     el.select(); el.setSelectionRange(0, 9999);
-    if (navigator.clipboard) navigator.clipboard.writeText(el.value).then(function(){ toast('已复制'); })
-      .catch(function(){ toast('复制失败，手动选一下'); });
-    else { document.execCommand('copy'); toast('已复制'); }
+    copyText(el.value, '已复制');
   });
 
   if (CRED){
