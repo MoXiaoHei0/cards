@@ -870,7 +870,7 @@
     var grid = $('grid');
     $('cnt').textContent = DB.cards.length ? '（' + DB.cards.length + '）' : '';
     if (!DB.cards.length){
-      grid.innerHTML = '<div class="empty">还没有卡<br>点右上角「＋ 新建卡片」，填完内容保存<br>再点卡片上的「发布」生成公开链接</div>';
+      grid.innerHTML = '<div class="empty">还没有卡<br>卡片清单存在这台设备的浏览器里，手机或别的浏览器打开都是空的<br>点右上角「＋ 新建卡片」，填完内容点「保存并上线」</div>';
       return;
     }
     grid.innerHTML = '';
@@ -880,8 +880,10 @@
       var tplName = (TPL[c.tpl] || {}).name || c.tpl;
       var pre = (TPL[c.tpl] || {}).pre || 'r/';
       var meta = '<span>' + esc(tplName) + '</span><span>' + dateOf(c.ts) + ' 建</span>';
-      if (c.published) meta += '<span>已发布</span>';
-      else meta += '<span>未发布</span>';
+      if (c.published){
+        if (Date.now() - (c.ts || 0) < 600000) meta += '<span data-cool="' + ((c.ts || 0) + 600000) + '">刚发布</span>';
+        else meta += '<span>已发布</span>';
+      } else meta += '<span>未发布</span>';
       var ops = '';
       if (ROLE === 'admin'){
         ops = '<button data-a="edit">编辑</button>' +
@@ -916,6 +918,17 @@
       grid.appendChild(box);
     });
   }
+
+  setInterval(function(){
+    var els = document.querySelectorAll('[data-cool]');
+    for (var i = 0; i < els.length; i++){
+      var end = parseInt(els[i].getAttribute('data-cool'), 10);
+      var left = end - Date.now();
+      if (left <= 0){ els[i].textContent = '已发布'; els[i].removeAttribute('data-cool'); continue; }
+      var s2 = Math.floor(left / 1000);
+      els[i].textContent = '刚发布 ' + Math.floor(s2 / 60) + ':' + ('0' + (s2 % 60)).slice(-2);
+    }
+  }, 1000);
 
   function b64(str){
     return btoa(unescape(encodeURIComponent(str)));
