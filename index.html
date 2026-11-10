@@ -595,7 +595,7 @@
 
   (function(){
     var box = $('tpls');
-    Object.keys(TPL).forEach(function(k){
+    ['redblack'].forEach(function(k){
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'tpl' + (k === curTpl ? ' on' : '');
