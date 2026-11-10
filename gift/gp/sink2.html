@@ -918,6 +918,7 @@
     ['sFoot1','sFoot2','sFoot3','sFoot4','sFoot5','sFoot6','sFoot7'].forEach(function(k){
       if ($(k)) $(k).textContent = footL;
     });
+    if (f.bgm){ var _bg = document.getElementById('bgm'); if (_bg){ _bg.src = f.bgm; } }
     $('mSub').textContent = f.bgmLabel || name;
   }
 
