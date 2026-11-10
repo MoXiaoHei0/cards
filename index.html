@@ -408,8 +408,153 @@
     return f[k] || '';
   }
 
+  /* ============ 背景音乐 ============ */
+  var bgmKeyCur = '', bgmNameCur = '', bgmDataCur = '';
+
+  function idbOpen(){
+    return new Promise(function(res, rej){
+      var r = indexedDB.open('cf_bgm_db', 1);
+      r.onupgradeneeded = function(){ r.result.createObjectStore('k'); };
+      r.onsuccess = function(){ res(r.result); };
+      r.onerror = function(){ rej(r.error); };
+    });
+  }
+  function idbSet(k, v){
+    return idbOpen().then(function(db){
+      return new Promise(function(res, rej){
+        var t = db.transaction('k', 'readwrite').objectStore('k').put(v, k);
+        t.onsuccess = function(){ res(1); };
+        t.onerror = function(){ rej(t.error); };
+      });
+    });
+  }
+  function idbGet(k){
+    return idbOpen().then(function(db){
+      return new Promise(function(res, rej){
+        var t = db.transaction('k', 'readonly').objectStore('k').get(k);
+        t.onsuccess = function(){ res(t.result || ''); };
+        t.onerror = function(){ rej(t.error); };
+      });
+    });
+  }
+  function u8ToB64(u8){
+    var s = '', n = u8.length, step = 0x8000;
+    for (var i = 0; i < n; i += step){
+      s += String.fromCharCode.apply(null, u8.subarray(i, Math.min(n, i + step)));
+    }
+    return btoa(s);
+  }
+  function audioBufToMp3(buf, srcRate){
+    try{
+      if (typeof lamejs === 'undefined') return '';
+      var dstRate = 22050;
+      var chs = buf.numberOfChannels;
+      var ratio = srcRate / dstRate;
+      var len = Math.floor(buf.length / ratio);
+      if (len <= 0) return '';
+      var pcm = new Float32Array(len);
+      for (var c = 0; c < chs; c++){
+        var cd = buf.getChannelData(c);
+        for (var i = 0; i < len; i++) pcm[i] += cd[Math.floor(i * ratio)] / chs;
+      }
+      var samples = new Int16Array(len);
+      for (var j = 0; j < len; j++){
+        var v = pcm[j]; if (v > 1) v = 1; if (v < -1) v = -1;
+        samples[j] = v < 0 ? v * 0x8000 : v * 0x7FFF;
+      }
+      var enc = new lamejs.Mp3Encoder(1, dstRate, 64);
+      var parts = [], block = 1152;
+      for (var p = 0; p < len; p += block){
+        var sub = samples.subarray(p, Math.min(len, p + block));
+        var mp3 = enc.encodeBuffer(sub);
+        if (mp3.length) parts.push(new Uint8Array(mp3));
+      }
+      var fin = enc.flush();
+      if (fin.length) parts.push(new Uint8Array(fin));
+      var total = 0;
+      for (var q = 0; q < parts.length; q++) total += parts[q].length;
+      var out = new Uint8Array(total), off = 0;
+      for (var w = 0; w < parts.length; w++){ out.set(parts[w], off); off += parts[w].length; }
+      return 'data:audio/mp3;base64,' + u8ToB64(out);
+    }catch(e){ return ''; }
+  }
+  function pickBgmFile(file, cb){
+    if (!file){ return; }
+    if (file.size > 30 * 1024 * 1024){ toast('文件太大，30MB 以内', 3500); return; }
+    var isVideo = /video/.test(file.type || '');
+    var isAudio = /audio/.test(file.type || '');
+    if (isAudio){
+      var fr = new FileReader();
+      fr.onload = function(){ cb(fr.result, file.name); };
+      fr.onerror = function(){ toast('这个音频读不出来', 3000); };
+      fr.readAsDataURL(file);
+      return;
+    }
+    if (!isVideo){ toast('选音频或视频文件', 3000); return; }
+    toast('正在从视频里抽音乐，等一下…', 4000);
+    var fr2 = new FileReader();
+    fr2.onload = function(){
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC){ toast('这台浏览器不支持', 3000); return; }
+      var ac = new AC();
+      ac.decodeAudioData(fr2.result, function(buf){
+        try{ ac.close && ac.close(); }catch(e){}
+        var dataUrl = audioBufToMp3(buf, buf.sampleRate);
+        if (!dataUrl){ toast('这段视频里的音乐读不出来', 3500); return; }
+        cb(dataUrl, file.name.replace(/\.[^.]+$/, '') + '.mp3');
+      }, function(){
+        try{ ac.close && ac.close(); }catch(e){}
+        toast('这段视频里的音乐读不出来', 3500);
+      });
+    };
+    fr2.onerror = function(){ toast('这个文件读不出来', 3000); };
+    fr2.readAsArrayBuffer(file);
+  }
+  function bindBgm(){
+    var fi = $('bgmFile');
+    if (!fi) return;
+    if (bgmKeyCur){
+      if ($('bgmName')) $('bgmName').textContent = bgmNameCur || '已选音乐';
+      if ($('bgmTip')) $('bgmTip').textContent = '正在读取音乐…';
+      idbGet(bgmKeyCur).then(function(v){
+        if (!v){ if ($('bgmTip')) $('bgmTip').textContent = '音乐没读到，请重新选一次'; return; }
+        bgmDataCur = v;
+        if ($('bgmTip')) $('bgmTip').textContent = '已导入（约 ' + Math.round(v.length / 1024) + ' KB）';
+      }).catch(function(){});
+    }
+    fi.addEventListener('change', function(){
+      var file = fi.files && fi.files[0];
+      if (!file) return;
+      pickBgmFile(file, function(dataUrl, name){
+        bgmDataCur = dataUrl;
+        bgmNameCur = name;
+        bgmKeyCur = 'bgm_' + Date.now();
+        idbSet(bgmKeyCur, dataUrl).then(function(){
+          if ($('bgmName')) $('bgmName').textContent = name;
+          if ($('bgmTip')) $('bgmTip').textContent = '已导入（约 ' + Math.round(dataUrl.length / 1024) + ' KB）';
+          toast('音乐已导入，保存时一起存', 2600);
+        }).catch(function(){ toast('音乐存不下，换首小一点的', 3500); });
+      });
+      fi.value = '';
+    });
+    $('bgmPlay').addEventListener('click', function(){
+      if (!bgmDataCur){ toast('还没选音乐，先点「选音乐」', 2600); return; }
+      var a = new Audio(bgmDataCur);
+      a.play().catch(function(){ toast('试听失败', 2600); });
+      setTimeout(function(){ try{ a.pause(); }catch(e){} }, 12000);
+    });
+    $('bgmClear').addEventListener('click', function(){
+      bgmDataCur = ''; bgmNameCur = ''; bgmKeyCur = '';
+      if ($('bgmName')) $('bgmName').textContent = '默认音乐';
+      if ($('bgmTip')) $('bgmTip').textContent = '选视频会自动把里面的音乐抽出来，等十几秒';
+      toast('已移除，会使用默认音乐', 2600);
+    });
+  }
+
   function buildForm(f, meta){
     f = f || {}; meta = meta || {};
+    bgmKeyCur = f.bgmKey || ''; bgmNameCur = f.bgmName || ''; bgmDataCur = '';
+
     var form = $('form');
     form.innerHTML = '';
 
@@ -460,6 +605,20 @@
     }
     ig.innerHTML = imgHtml;
     form.appendChild(ig);
+
+    var mg = document.createElement('div');
+    mg.className = 'grp';
+    mg.innerHTML =
+      '<h4>背景音乐</h4>' +
+      '<div class="row"><label>这首歌（音频或视频都行）</label>' +
+        '<div class="imgrow"><span class="hintx" id="bgmName">默认音乐</span>' +
+          '<label class="file-btn" for="bgmFile">选音乐</label>' +
+          '<button type="button" class="file-btn" id="bgmPlay">试听</button>' +
+          '<button type="button" class="file-btn" id="bgmClear">移除</button></div>' +
+        '<div class="hintx" id="bgmTip">选视频会自动把里面的音乐抽出来，等十几秒</div>' +
+        '<input id="bgmFile" type="file" accept="audio/*,video/*" style="display:none" /></div>';
+    form.appendChild(mg);
+    bindBgm();
 
     var PH = 'data:image/svg+xml;utf8,' + encodeURIComponent(
       '<svg xmlns="http://www.w3.org/2000/svg" width="62" height="62"><rect width="62" height="62" fill="#161216"/>' +
@@ -640,6 +799,8 @@
 
   $('btnGen').addEventListener('click', function(){
     var f = collect();
+    f.bgmKey = bgmKeyCur || '';
+    f.bgmName = bgmNameCur || '';
     var title = ($('fi_title').value || '').trim();
     if (!title){ toast('先写标题（你的名字）'); $('fi_title').focus(); return; }
     if (!f.name){ toast('先填页面大标题'); return; }
@@ -772,12 +933,15 @@
     });
   }
 
-  function buildHtml(tplKey, card){
+  function buildHtml(tplKey, card, bgm){
     return fetch(TPL[tplKey].file).then(function(r){
       if (!r.ok) throw new Error('模板读取失败 ' + r.status);
       return r.text();
     }).then(function(tpl){
-      var data = JSON.stringify({ f:card.f, title:card.title, slug:card.slug, tpl:tplKey });
+      var fcopy = {};
+      for (var kk in card.f) fcopy[kk] = card.f[kk];
+      if (bgm) fcopy.bgm = bgm;
+      var data = JSON.stringify({ f:fcopy, title:card.title, slug:card.slug, tpl:tplKey });
       var head = '<scr' + 'ipt>window.__CARD__=' + data + ';</scr' + 'ipt>';
       tpl = tpl.replace('<!--__CARD_JSON__-->', head);
       tpl = tpl.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + card.title.replace(/[<>&]/g, '') + '</title>');
@@ -800,13 +964,16 @@
     if (btn){ btn.disabled = true; btn.textContent = '发布中…'; }
     var path = 'p/' + card.slug + '.html';
 
-    buildHtml(card.tpl, card).then(function(html){
-      var body = { message:'card: ' + card.title, content:b64(html), branch:'main' };
-      return ghGet(path).then(function(r){
-        if (r.status === 200){
-          return r.json().then(function(j){ body.sha = j.sha; return ghPut(path, body); });
-        }
-        return ghPut(path, body);
+    var bready = (card.f && card.f.bgmKey) ? idbGet(card.f.bgmKey).catch(function(){ return ''; }) : Promise.resolve('');
+    bready.then(function(bgm){
+      return buildHtml(card.tpl, card, bgm).then(function(html){
+        var body = { message:'card: ' + card.title, content:b64(html), branch:'main' };
+        return ghGet(path).then(function(r){
+          if (r.status === 200){
+            return r.json().then(function(j){ body.sha = j.sha; return ghPut(path, body); });
+          }
+          return ghPut(path, body);
+        });
       });
     }).then(function(r){
       return r.json().then(function(j){
@@ -915,5 +1082,6 @@
   if (!CRED) showLogin();
 })();
 </script>
+<script src="assets/lame.min.js"></script>
 </body>
 </html>
