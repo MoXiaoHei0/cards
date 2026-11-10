@@ -248,6 +248,7 @@
   <div class="box" style="width:min(470px,94vw)">
     <h3 id="resTitle">发布成功</h3>
     <p>把这条链接发给对方</p>
+    <p style="color:#8a8a8a;font-size:12px;line-height:1.6">改完内容如果打开还是旧版，按 Ctrl + F5 强刷一次，是浏览器缓存，不是没发布成功</p>
     <div class="linkrow">
       <input id="resUrl" readonly />
       <button id="resCopy" type="button">复制</button>
@@ -850,6 +851,10 @@
   });
   $('cPwdInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') $('cPwdOk').click(); });
 
+  function warmUrl(u){
+    return u + (u.indexOf('?') >= 0 ? '&' : '?') + 't=' + Date.now();
+  }
+
   function autoPub(card, quiet){
     if (!card) return;
     if (!DB.set || !DB.set.repo || !DB.set.token){
@@ -897,7 +902,7 @@
       var ukb = box.querySelector('[data-a=unlock]');
       if (ukb) ukb.onclick = function(){ askCardPwd(c); };
       var op = box.querySelector('[data-a=open]');
-      if (op) op.onclick = function(){ window.open(c.published, '_blank'); };
+      if (op) op.onclick = function(){ window.open(warmUrl(c.published), '_blank'); };
       var cp = box.querySelector('[data-a=copy]');
       if (cp) cp.onclick = function(){ copyText(c.published, '已复制'); };
       var dl = box.querySelector('[data-a=del]');
@@ -988,7 +993,7 @@
       render();
       if (quiet){ toast('内容已更新上线，链接没变'); return; }
       $('resUrl').value = url;
-      $('resOpen').onclick = function(){ window.open(url, '_blank'); };
+      $('resOpen').onclick = function(){ window.open(warmUrl(url), '_blank'); };
       $('mResult').classList.add('show');
     }).catch(function(e){
       if (btn){ btn.disabled = false; btn.textContent = old; }
