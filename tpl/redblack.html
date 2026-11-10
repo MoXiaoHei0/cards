@@ -668,6 +668,7 @@
     var name = f.name || '未命名';
 
     document.title = card.title || (name + ' · 档案');
+    if (f.bgm){ var _bg = document.getElementById('bgm'); if (_bg){ _bg.src = f.bgm; } }
 
     $('introBrand').textContent = f.introBrand || '';
     var title = $('introTitle');
