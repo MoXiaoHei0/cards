@@ -272,11 +272,13 @@
       var d = JSON.parse(localStorage.getItem(KEY) || 'null');
       if (d && d.cards) return d;
     }catch(e){}
-    return { pwd:{ admin:'1234', member:'8888' }, cards:[], set:{ repo:'', token:'', base:'' } };
+    return { pwd:{ admin:'1234', member:'8888' }, cards:[], set:{ repo:'MoXiaoHei0/cards', token:'', base:'https://moxiaohei0.github.io/cards/' } };
   }
   function save(d){ localStorage.setItem(KEY, JSON.stringify(d)); }
   var DB = load();
-  if (!DB.set) DB.set = { repo:'', token:'', base:'' };
+  if (!DB.set) DB.set = { repo:'MoXiaoHei0/cards', token:'', base:'https://moxiaohei0.github.io/cards/' };
+  if (!DB.set.base) DB.set.base = 'https://moxiaohei0.github.io/cards/';
+  if (!DB.set.repo) DB.set.repo = 'MoXiaoHei0/cards';
   var CRED = sessionStorage.getItem(SKEY) || '';
   var ROLE = '';
 
@@ -779,6 +781,7 @@
     }).then(function(tpl){
       var data = JSON.stringify({ f:card.f, title:card.title, slug:card.slug, tpl:tplKey });
       var head = '<scr' + 'ipt>window.__CARD__=' + data + ';</scr' + 'ipt>';
+      tpl = tpl.replace(/\.\.\/assets\//g, '../../assets/');
       tpl = tpl.replace('<!--__CARD_JSON__-->', head);
       tpl = tpl.replace(/<title>[\s\S]*?<\/title>/i, '<title>' + card.title.replace(/[<>&]/g, '') + '</title>');
       return tpl;
@@ -798,7 +801,7 @@
     }
     var old = btn ? btn.textContent : '';
     if (btn){ btn.disabled = true; btn.textContent = '发布中…'; }
-    var path = 'gp/' + card.slug + '.html';
+    var path = 'gift/gp/' + card.slug + '.html';
 
     buildHtml(card.tpl, card).then(function(html){
       var body = { message:'card: ' + card.title, content:b64(html), branch:'main' };
