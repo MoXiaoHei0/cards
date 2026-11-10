@@ -214,6 +214,17 @@
   </div>
 </div>
 
+
+<div class="mask" id="mCardPwd">
+  <div class="box">
+    <h3 id="cPwdTitle">输入这张卡的密码</h3>
+    <p id="cPwdTip">密码是建卡的人自己定的</p>
+    <input id="cPwdInput" type="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="输入密码" />
+    <div class="err" id="cPwdErr"></div>
+    <div class="btns"><button id="cPwdCancel" type="button">取消</button><button class="primary" id="cPwdOk" type="button">进入</button></div>
+  </div>
+</div>
+
 <div class="mask" id="mSet">
   <div class="setbox">
     <h3>发布设置</h3>
@@ -373,7 +384,7 @@
     $('chipRole').textContent = (ROLE === 'admin') ? '管理端' : '员工端';
     $('btnAdminPwd').style.display = (ROLE === 'admin') ? '' : 'none';
     $('btnMemberPwd').style.display = (ROLE === 'admin') ? '' : 'none';
-    $('btnSet').style.display = '';
+    $('btnSet').style.display = (ROLE === 'admin') ? '' : 'none';
     $('btnLogout').style.display = '';
   }
 
@@ -408,6 +419,8 @@
       '<h4>这张卡叫什么</h4>' +
       '<div class="row"><label>标题（写名字，方便认出来）</label>' +
         '<input id="fi_title" autocomplete="off" placeholder="例如 殊荣" /></div>' +
+      '<div class="row"><label>这张卡的密码（4 位以上，可不填）</label>' +
+        '<input id="fi_cpwd" autocomplete="off" placeholder="自己定，以后改内容要输它" /></div>' +
       '<div class="row"><label>链接后缀（小写字母或数字）</label>' +
         '<div class="slugline"><span>' + TPL[curTpl].pre + '</span>' +
         '<input id="fi_slug" autocomplete="off" placeholder="填拼音，比如 shurong" /></div>' +
@@ -416,7 +429,7 @@
 
     var titleEl = $('fi_title'), slugEl = $('fi_slug');
     titleEl.value = meta.title || f.name || '';
-    if (meta.slug){ slugEl.value = meta.slug; slugEl.setAttribute('readonly', 'readonly'); }
+    var cpwdEl = document.getElementById('fi_cpwd'); if (cpwdEl) cpwdEl.value = meta.pwd || ''; if (meta.slug){ slugEl.value = meta.slug; slugEl.setAttribute('readonly', 'readonly'); }
     slugManual = !!meta.slug;
     titleEl.addEventListener('input', function(){
       schedulePreview();
@@ -616,7 +629,7 @@
     }
     pvReady = false; showPvLoad();
     $('pv').src = TPL[curTpl].file + '?draft=1';
-    buildForm((card && card.f) || {}, { title: card && card.title, slug: card && card.slug });
+    buildForm((card && card.f) || {}, { title: card && card.title, slug: card && card.slug, pwd: card && card.pwd });
     $('editMask').classList.add('show');
   }
   $('dlgClose').addEventListener('click', function(){ $('editMask').classList.remove('show'); });
@@ -633,23 +646,57 @@
     var slug = ($('fi_slug').value || '').trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
     if (!slug) slug = 'card' + Math.random().toString(36).slice(2, 6);
 
+    var cpwd = (($('fi_cpwd') || {}).value || '').trim();
     if (editId){
       var hit = DB.cards.filter(function(x){ return x.id === editId; })[0];
-      if (hit){ hit.f = f; hit.title = title; hit.ts = Date.now(); save(DB); }
+      if (hit){ hit.f = f; hit.title = title; hit.pwd = cpwd; hit.ts = Date.now(); save(DB); }
       $('editMask').classList.remove('show');
-      toast('已保存');
+      toast(ROLE === 'admin' ? '已保存' : '已保存，正在上线…', 2800);
       render();
+      autoPub(hit);
       return;
     }
     var used = DB.cards.map(function(x){ return x.slug; });
     var base = slug, n = 1;
     while (used.indexOf(slug) >= 0){ n++; slug = base + n; }
-    DB.cards.unshift({ id:'c' + Date.now(), slug:slug, title:title, tpl:curTpl, f:f, ts:Date.now(), published:'' });
+    DB.cards.unshift({ id:'c' + Date.now(), slug:slug, title:title, tpl:curTpl, f:f, pwd:cpwd, ts:Date.now(), published:'' });
     save(DB);
     $('editMask').classList.remove('show');
     render();
-    toast('已保存到本地，点卡片上的「发布」才有公开链接', 3000);
+    var nc = DB.cards[0];
+    toast(ROLE === 'admin' ? '已保存到本地，点卡片上的「发布」才有公开链接' : '已保存，正在上线…', 3200);
+    autoPub(nc);
   });
+
+  var unlockCard = null;
+  function askCardPwd(c){
+    if (!c.pwd){ openDialog(c); return; }
+    unlockCard = c;
+    $('cPwdInput').value = '';
+    $('cPwdErr').textContent = '';
+    $('cPwdTip').textContent = '「' + (c.title || '未命名') + '」的密码';
+    $('mCardPwd').classList.add('show');
+    setTimeout(function(){ $('cPwdInput').focus(); }, 60);
+  }
+  $('cPwdCancel').addEventListener('click', function(){ $('mCardPwd').classList.remove('show'); });
+  $('cPwdOk').addEventListener('click', function(){
+    var v = $('cPwdInput').value.trim();
+    if (!unlockCard) { $('mCardPwd').classList.remove('show'); return; }
+    if (v !== unlockCard.pwd){ $('cPwdErr').textContent = '密码不对'; return; }
+    var card = unlockCard; unlockCard = null;
+    $('mCardPwd').classList.remove('show');
+    openDialog(card);
+  });
+  $('cPwdInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') $('cPwdOk').click(); });
+
+  function autoPub(card){
+    if (ROLE === 'admin' || !card) return;
+    if (!DB.set || !DB.set.repo || !DB.set.token){
+      toast('已保存。这台电脑没配授权码，需要管理端来点发布', 4200);
+      return;
+    }
+    publish(card, null);
+  }
 
   function render(){
     var grid = $('grid');
@@ -666,17 +713,27 @@
       var pre = (TPL[c.tpl] || {}).pre || 'r/';
       var meta = '<span>' + esc(tplName) + '</span><span>' + dateOf(c.ts) + ' 建</span>';
       if (c.published) meta += '<span>已发布</span>';
-      var ops = '<button data-a="edit">编辑</button>' +
-                '<button data-a="pub" class="pub">' + (c.published ? '重新发布' : '发布') + '</button>';
-      if (c.published) ops += '<button data-a="open">打开</button><button data-a="copy">复制链接</button>';
-      if (ROLE === 'admin') ops += '<button data-a="del" class="danger">删除</button>';
+      var ops = '';
+      if (ROLE === 'admin'){
+        ops = '<button data-a="edit">编辑</button>' +
+              '<button data-a="pub" class="pub">' + (c.published ? '重新发布' : '发布') + '</button>';
+        if (c.published) ops += '<button data-a="open">打开</button><button data-a="copy">复制链接</button>';
+        ops += '<button data-a="del" class="danger">删除</button>';
+      } else {
+        ops = '<button data-a="unlock">输入密码</button>';
+        if (c.published) ops += '<button data-a="open">打开</button><button data-a="copy">复制链接</button>';
+      }
       box.innerHTML =
         '<div class="nm">' + esc(c.title || '未命名') + '</div>' +
         '<div class="sub">' + esc(pre + c.slug + '.html') + '</div>' +
         '<div class="meta">' + meta + '</div>' +
         '<div class="ops">' + ops + '</div>';
-      box.querySelector('[data-a=edit]').onclick = function(){ openDialog(c); };
-      box.querySelector('[data-a=pub]').onclick = function(){ publish(c, this); };
+      var edb = box.querySelector('[data-a=edit]');
+      if (edb) edb.onclick = function(){ openDialog(c); };
+      var pbb = box.querySelector('[data-a=pub]');
+      if (pbb) pbb.onclick = function(){ publish(c, this); };
+      var ukb = box.querySelector('[data-a=unlock]');
+      if (ukb) ukb.onclick = function(){ askCardPwd(c); };
       var op = box.querySelector('[data-a=open]');
       if (op) op.onclick = function(){ window.open(c.published, '_blank'); };
       var cp = box.querySelector('[data-a=copy]');
@@ -739,8 +796,8 @@
       toast('先填发布设置');
       return;
     }
-    var old = btn.textContent;
-    btn.disabled = true; btn.textContent = '发布中…';
+    var old = btn ? btn.textContent : '';
+    if (btn){ btn.disabled = true; btn.textContent = '发布中…'; }
     var path = 'p/' + card.slug + '.html';
 
     buildHtml(card.tpl, card).then(function(html){
@@ -761,13 +818,13 @@
       var url = base ? base + '/' + path : path;
       card.published = url; card.ts = Date.now();
       save(DB);
-      btn.disabled = false; btn.textContent = old;
+      if (btn){ btn.disabled = false; btn.textContent = old; }
       $('resUrl').value = url;
       $('resOpen').onclick = function(){ window.open(url, '_blank'); };
       $('mResult').classList.add('show');
       render();
     }).catch(function(e){
-      btn.disabled = false; btn.textContent = old;
+      if (btn){ btn.disabled = false; btn.textContent = old; }
       toast('发布失败：' + (e.message || e), 4200);
     });
   }
