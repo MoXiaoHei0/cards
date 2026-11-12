@@ -1264,8 +1264,9 @@
     if (v === DB.pwd.admin){ CRED = v; ROLE = 'admin'; }
     else { $('loginErr').textContent = '密码不对'; return; }
     try{ sessionStorage.setItem(SKEY, v); }catch(e){}
+    try{ localStorage.setItem('cf_gh_astra_login', '1'); }catch(e){}
     $('mLogin').classList.remove('show');
-    paintRole(); render();
+    paintRole(); render(); openFromHash();
   });
   $('loginInput').addEventListener('keydown', function(e){ if (e.key === 'Enter') $('loginOk').click(); });
 
@@ -1317,9 +1318,18 @@
     ROLE = (CRED === DB.pwd.admin) ? 'admin' : '';
     if (!ROLE){ CRED = ''; try{ sessionStorage.removeItem(SKEY); }catch(e){} }
   }
+  function openFromHash(){
+    var m = /#e=([^&#]+)/.exec(location.hash || '');
+    if (!m) return;
+    var slug = decodeURIComponent(m[1]);
+    var cs = DB.cards || [], hit = null;
+    for (var i = 0; i < cs.length; i++) if (cs[i].slug === slug) hit = cs[i];
+    try{ history.replaceState(null, '', location.pathname + location.search); }catch(e){}
+    if (hit) openDialog(hit);
+  }
   paintRole();
   render();
-  if (!CRED) showLogin();
+  if (!CRED) showLogin(); else openFromHash();
 })();
 </script>
 <script src="../assets/lame.min.js"></script>
