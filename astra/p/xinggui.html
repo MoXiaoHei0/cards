@@ -254,6 +254,31 @@ body{position:relative}
   .bar button{padding:10px 18px;min-height:42px}
   .vert{display:none}
 }
+/* ---- 就地编辑面板 ---- */
+.ed{position:fixed;inset:0;background:rgba(3,7,15,.965);z-index:10000;
+  display:none;overflow-y:auto;padding:24px 16px 96px;-webkit-overflow-scrolling:touch}
+.ed.on{display:block}
+.ed-in{max-width:540px;margin:0 auto}
+.ed-h{font-size:12px;letter-spacing:.26em;color:#c9a86a;margin-bottom:16px}
+.ed-f{margin-bottom:11px}
+.ed-f label{display:block;font-size:10px;color:#7d8aa6;letter-spacing:.12em;margin-bottom:5px}
+.ed-f input,.ed-f textarea{width:100%;background:rgba(255,255,255,.04);
+  border:1px solid rgba(150,175,225,.2);color:#dae2f2;font-size:13px;
+  padding:8px 10px;border-radius:4px;font-family:inherit;outline:none;
+  -webkit-appearance:none}
+.ed-f textarea{min-height:60px;resize:vertical;line-height:1.7}
+.ed-f input:focus,.ed-f textarea:focus{border-color:rgba(201,168,106,.62)}
+.ed-btns{position:fixed;left:0;right:0;bottom:0;padding:12px 16px;
+  background:linear-gradient(to top,rgba(3,7,15,.99),rgba(3,7,15,.72));
+  display:flex;gap:8px;max-width:540px;margin:0 auto;z-index:10001}
+.ed-btns button{flex:1;min-height:40px;background:transparent;
+  border:1px solid rgba(150,175,225,.28);color:#dae2f2;font-size:12px;
+  letter-spacing:.12em;border-radius:3px;font-family:inherit;cursor:pointer}
+.ed-btns button#edPub{border-color:rgba(201,168,106,.55);color:#e2cf9f}
+.ed-msg{position:fixed;left:0;right:0;bottom:66px;text-align:center;
+  font-size:11px;color:#8fb8e0;letter-spacing:.06em;z-index:10002;
+  pointer-events:none;opacity:0;transition:opacity .3s}
+.ed-msg.on{opacity:1}
 </style>
 </head>
 <body>
@@ -360,6 +385,16 @@ body{position:relative}
   </div>
 </section>
 
+<div class="ed" id="edPanel">
+  <div class="ed-in"><div class="ed-h">EDIT · 就地修改</div><div id="edBody"></div></div>
+  <div class="ed-btns">
+    <button id="edCancel">取 消</button>
+    <button id="edSave">保 存</button>
+    <button id="edPub">发 布 上 线</button>
+  </div>
+  <div class="ed-msg" id="edMsg"></div>
+</div>
+
 <div class="bar"><span id="barL"></span><button id="btnBack" style="display:none">返 回</button></div>
 
 <script>
@@ -367,6 +402,9 @@ body{position:relative}
 'use strict';
 var $ = function(id){ return document.getElementById(id); };
 var CARD = null, cur = 's1', BG = null;
+var SLUG = (location.pathname.split('/').pop() || '').replace(/\.html$/, '');
+var ED_KEY = 'cf_draft_' + (SLUG || 'x');
+var RAW_HTML = '<!DOCTYPE html>' + document.documentElement.outerHTML;
 var ABASE = (function(){
   var p = location.pathname;
   if (p.indexOf('/astra/p/') > -1) return '../../assets/';
@@ -622,18 +660,154 @@ for (var i = 0; i < doors.length; i++){
 }
 $('btnMore').onclick = function(){ go('s2'); };
 
-/* 左上角编辑：只有本机登录过管理端的浏览器才看得到 */
+/* 左上角编辑：就地修改，不跳工厂 */
+var EFIELDS = [
+  ['name','名字'],['alias','英文别名'],['brief','一句话介绍'],
+  ['introBrand','顶部英文小标'],['introSub','顶部中文副标'],
+  ['tags','标签（逗号分隔）'],['style','关键词（逗号分隔）'],
+  ['workday','平日时段'],['weekend','周末时段'],
+  ['about','关于我（可多行）'],['rules','规矩（每行一条）'],
+  ['q1','寻灵 I · 牌面文字'],['q1c','寻灵 I · 选项（用 / 分隔）'],
+  ['q2','寻灵 II · 牌面文字'],['q2c','寻灵 II · 选项（用 / 分隔）'],
+  ['links','链接（每行：名称|网址）'],
+  ['scribble1','页内手写句一'],['scribble2','页内手写句二'],
+  ['footer1','页脚署名'],['footL','左下署名'],['bgmLabel','音乐名'],
+  ['avatar','头像图片网址'],['cover','封面图片网址']
+];
+var EDAREA = {about:1, rules:1, links:1};
+
+function edGet(k, f){
+  if (k === 'q1' || k === 'q2') return (f[k] && f[k].text) || '';
+  if (k === 'q1c' || k === 'q2c') return ((f[k.slice(0,2)] && f[k.slice(0,2)].choices) || []).join(' / ');
+  if (k === 'links') return (f.links || []).map(function(x){ return (x.label||'') + (x.url ? '|' + x.url : ''); }).join('\n');
+  var v = f[k];
+  if (Array.isArray(v)) return v.join('、');
+  if (v && typeof v === 'object') return '';
+  return v == null ? '' : String(v);
+}
+
+function edMsg(t){
+  var m = $('edMsg'); if (!m) return;
+  m.textContent = t; m.classList.add('on');
+  clearTimeout(edMsg._t);
+  edMsg._t = setTimeout(function(){ m.classList.remove('on'); }, 2600);
+}
+
+function edOpen(){
+  var f = (CARD && CARD.f) || {};
+  var body = $('edBody'); if (!body) return;
+  body.innerHTML = '';
+  EFIELDS.forEach(function(it){
+    var wrap = document.createElement('div'); wrap.className = 'ed-f';
+    var lb = document.createElement('label'); lb.textContent = it[1];
+    var inp = document.createElement(EDAREA[it[0]] ? 'textarea' : 'input');
+    inp.value = edGet(it[0], f);
+    inp.setAttribute('data-k', it[0]);
+    wrap.appendChild(lb); wrap.appendChild(inp); body.appendChild(wrap);
+  });
+  $('edPanel').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+
+function edClose(){
+  $('edPanel').classList.remove('on');
+  document.body.style.overflow = '';
+}
+
+function edRead(){
+  var f = JSON.parse(JSON.stringify((CARD && CARD.f) || {}));
+  [].forEach.call($('edBody').querySelectorAll('[data-k]'), function(el){
+    var k = el.getAttribute('data-k'), v = el.value;
+    if (k === 'tags' || k === 'style'){
+      f[k] = v.split(/[,，]/).map(function(x){ return x.trim(); }).filter(Boolean);
+    } else if (k === 'rules'){
+      f[k] = v.split('\n').map(function(x){ return x.trim(); }).filter(Boolean);
+    } else if (k === 'links'){
+      f.links = v.split('\n').map(function(line){
+        var cut = line.split('|');
+        if (!cut[0] || !cut[0].trim()) return null;
+        return { label: cut[0].trim(), url: (cut[1] || '').trim(), key: 'LINK' };
+      }).filter(Boolean);
+    } else if (k === 'q1' || k === 'q2'){
+      f[k] = f[k] || {}; f[k].text = v;
+    } else if (k === 'q1c' || k === 'q2c'){
+      var q = k.slice(0, 2); f[q] = f[q] || {};
+      f[q].choices = v.split(/[\/／]/).map(function(x){ return x.trim(); }).filter(Boolean);
+    } else {
+      f[k] = v;
+    }
+  });
+  return f;
+}
+
+function edApply(){
+  var f = edRead();
+  CARD = CARD || {}; CARD.f = f;
+  fill(CARD);
+  try{
+    localStorage.setItem(ED_KEY, JSON.stringify(CARD));
+    var db = JSON.parse(localStorage.getItem('cf_gh_v1') || 'null');
+    if (db && db.cards && SLUG){
+      db.cards.forEach(function(c){
+        if (c && c.slug === SLUG){ c.f = f; if (CARD.title) c.title = CARD.title; }
+      });
+      localStorage.setItem('cf_gh_v1', JSON.stringify(db));
+    }
+  }catch(e){}
+  return f;
+}
+
+function edPublish(cb){
+  var f = edRead();
+  var title = (CARD && CARD.title) || document.title;
+  var db = {};
+  try{ db = JSON.parse(localStorage.getItem('cf_gh_v1') || '{}'); }catch(e){}
+  var tok = (db.set || {}).token, repo = (db.set || {}).repo || 'MoXiaoHei0/cards';
+  if (!tok) return cb('没找到授权码，先回工厂保存一次设置');
+  var path = location.pathname.replace(/^\//, '');
+  var payload = '<script>window.__CARD__=' + JSON.stringify({ f: f, title: title }) + ';<\/script>';
+  var html = RAW_HTML.replace(/<script>window\.__CARD__=[\s\S]*?<\/script>/, function(){ return payload; });
+  html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>' + title + '</title>');
+  var url = 'https://api.github.com/repos/' + repo + '/contents/' + path;
+  var H = { Authorization: 'token ' + tok, Accept: 'application/vnd.github+json' };
+  fetch(url, { headers: H })
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      return fetch(url, { method: 'PUT',
+        headers: { Authorization: 'token ' + tok, Accept: 'application/vnd.github+json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: 'edit card from page', branch: 'main',
+          content: btoa(unescape(encodeURIComponent(html))), sha: j && j.sha }) });
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if (j && j.content){
+        try{ localStorage.removeItem(ED_KEY); }catch(e){}
+        cb(null);
+      } else cb('发布失败：' + ((j && j.message) || '未知'));
+    })
+    .catch(function(e){ cb('网络错误：' + e); });
+}
+
 try{
   if (localStorage.getItem('cf_gh_astra_login') === '1'){
     var eb = $('btnEdit');
     if (eb){
       eb.style.display = 'block';
-      eb.onclick = function(){
-        var slug = (CARD && CARD.slug) ? CARD.slug : '';
-        var admin = location.pathname.replace(/p\/[^\/]*$/, '');
-        window.open(admin + (slug ? '#e=' + encodeURIComponent(slug) : ''), '_blank');
-      };
+      eb.title = '就地修改这张卡';
+      eb.onclick = edOpen;
     }
+    if ($('edCancel')) $('edCancel').onclick = edClose;
+    if ($('edSave')) $('edSave').onclick = function(){
+      edApply();
+      edMsg('已保存（本机可见，刷新还在）');
+    };
+    if ($('edPub')) $('edPub').onclick = function(){
+      edApply();
+      edMsg('正在发布…');
+      edPublish(function(err){
+        if (err) edMsg(err); else edMsg('已发布上线，10 分钟内全网生效');
+      });
+    };
   }
 }catch(e){}
 
@@ -644,6 +818,7 @@ document.addEventListener('keydown', function(e){
 
 /* 启动 */
 var INLINE = window.__CARD__ || null;
+try{ var _dc = localStorage.getItem(ED_KEY); if (_dc && INLINE) INLINE = JSON.parse(_dc); }catch(e){}
 if (INLINE){
   fill(INLINE);
   go('s1');
