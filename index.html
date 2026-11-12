@@ -379,6 +379,40 @@
           {k:'footL', l:'每页左下角文字'},
         ]},
       ]},
+    astra: { name:'星轨文游', file:'tpl/astra.html', pre:'a/', out:'astra/p/',
+      groups:[
+        {g:'开场', rows:[
+          {k:'name', l:'牌面标题（只填这个就是竖排大字）'},
+          {k:'alias', l:'英文小名（会全大写显示）'},
+          {k:'brief', l:'牌下面的一句话'},
+          {k:'tarotText', l:'牌面内容（留空就只显示竖排标题；填了按正常排版显示）', area:true, big:true},
+          {k:'optText', l:'翻牌后牌下的选项文字（留空显示“进入”）'},
+          {k:'introBrand', l:'开场顶部小字'},
+          {k:'introSub', l:'右侧竖排小字'},
+        ]},
+        {g:'主界面', rows:[
+          {k:'tags', l:'称号（逗号分隔，最多 3 个）', list:true},
+          {k:'style', l:'属性词（逗号分隔，最好 4 个）', list:true},
+        ]},
+        {g:'任务', rows:[
+          {k:'workday', l:'工作日时间'},
+          {k:'weekend', l:'周末时间'},
+          {k:'rules', l:'须知（一行一条）', lines:true, area:true, big:true},
+        ]},
+        {g:'剧情', rows:[
+          {k:'about', l:'剧情正文（一行一段，自动编号）', area:true, big:true},
+        ]},
+        {g:'寻灵（可留空）', rows:[
+          {k:'q1', l:'问题一（问题 + 三个选项）', qa:true},
+          {k:'q2', l:'问题二（问题 + 三个选项）', qa:true},
+        ]},
+        {g:'尾声', rows:[
+          {k:'links', l:'相关链接（一行一条：名称|网址|英文标注）', links:true, area:true},
+          {k:'scribble1', l:'批注 · 左'},
+          {k:'scribble2', l:'批注 · 右'},
+          {k:'footer1', l:'页脚'},
+        ]},
+      ]},
   };
 
   var curTpl = 'redblack';
@@ -1148,7 +1182,7 @@
     }
     var old = btn ? btn.textContent : '';
     if (btn){ btn.disabled = true; btn.textContent = '发布中…'; }
-    var path = 'p/' + card.slug + '.html';
+    var path = ((TPL[card.tpl] || {}).out || 'p/') + card.slug + '.html';
 
     var bready = (card.f && card.f.bgmKey) ? idbGet(card.f.bgmKey).catch(function(){ return ''; }) : Promise.resolve('');
     bready.then(function(bgm){
@@ -1280,6 +1314,40 @@
   paintRole();
   render();
   if (!CRED) showLogin();
+
+  /* 星轨旧数据并入主平台（同域 localStorage，只做一次） */
+  (function(){
+    try{
+      var old = localStorage.getItem('cf_gh_astra');
+      if (!old) return;
+      var od = JSON.parse(old);
+      if (!od || !od.cards || !od.cards.length) return;
+      var have = {};
+      DB.cards.forEach(function(c){ have[c.slug] = 1; });
+      var added = 0;
+      od.cards.forEach(function(c){
+        if (c && c.slug && !have[c.slug]){ c.tpl = 'astra'; DB.cards.push(c); added++; }
+      });
+      if (added){
+        save(DB);
+        localStorage.removeItem('cf_gh_astra');
+        setTimeout(function(){ render(); toast('已把 ' + added + ' 张星轨卡并入这里', 3200); }, 60);
+      }
+    }catch(e){}
+  })();
+
+  /* 成品页左上角「编辑」跳回来时，直接打开这张卡 */
+  (function(){
+    var m = (location.hash || '').match(/#e=([A-Za-z0-9_-]+)/);
+    if (!m) return;
+    var slug = m[1];
+    setTimeout(function(){
+      var c = DB.cards.filter(function(x){ return x.slug === slug; })[0];
+      if (!c) return;
+      if (!CRED){ showLogin(); return; }
+      if (typeof openDialog === 'function') openDialog(c);
+    }, 260);
+  })();
 })();
 </script>
 <script src="assets/lame.min.js"></script>
