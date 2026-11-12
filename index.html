@@ -930,12 +930,14 @@
       if (!f.letterTitle) f.letterTitle = (f.name || '') + '的档案';
       if (!f.seal) f.seal = (f.name || '档').charAt(0);
       if (!f.footer2) f.footer2 = (f.name || '') + (f.brief ? ' · ' + f.brief : '');
-    } else {
+    } else if (curTpl === 'sink'){
       f.avatar = avatar || '';
       f.cover = cover || '';
       f.footL = f.footL || ((f.name || '') + ' · 沉潜');
       f.bgmLabel = (f.name || '') + ' · 沉潜';
       f.updated = f.updated || today();
+    } else {
+      f.avatar = avatar || '';
     }
     return f;
   }
@@ -958,7 +960,7 @@
 
   (function(){
     var box = $('tpls');
-    ['redblack'].forEach(function(k){
+    ['redblack','astra'].forEach(function(k){
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'tpl' + (k === curTpl ? ' on' : '');
