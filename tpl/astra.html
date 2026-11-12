@@ -60,8 +60,7 @@ body{position:relative}
 
 /* 开场：塔罗牌 */
 .tarot{position:relative;width:min(58vw,238px);aspect-ratio:5/7.6;margin:30px auto 0;
-  cursor:pointer;transform-style:preserve-3d;perspective:900px;
-  transition:transform .76s cubic-bezier(.32,.74,.28,1), opacity .76s}
+  cursor:pointer;perspective:1200px}
 .tarot .glow{position:absolute;inset:-16px;z-index:-1;pointer-events:none;border-radius:3px;
   box-shadow:
     0 0 20px 5px rgba(255,255,255,.17),
@@ -70,34 +69,33 @@ body{position:relative}
     0 0 130px 46px rgba(235,242,255,.035);
   animation:glow 4.4s ease-in-out infinite}
 @keyframes glow{0%,100%{opacity:.66}50%{opacity:1}}
-.tarot .frame{position:absolute;inset:0;
+.tarot .flipper{position:absolute;inset:0;transform-style:preserve-3d;
+  transition:transform .96s cubic-bezier(.45,.06,.24,1)}
+.tarot.flipped .flipper{transform:rotateY(180deg)}
+.facecard{position:absolute;inset:0;padding:46px 17px 24px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
   border:1px solid rgba(228,236,250,.34);
   background:linear-gradient(168deg,#141c30 0%,#0a0f1b 56%,#070a12 100%);
   box-shadow:inset 0 0 58px -12px rgba(210,226,255,.26);
   overflow:hidden}
-.tarot .frame:before{content:"";position:absolute;inset:8px;border:1px solid rgba(206,220,255,.14)}
-.tarot .corner{position:absolute;width:13px;height:13px;border:1px solid rgba(236,242,255,.45)}
-.tarot .corner.tl{top:15px;left:15px;border-right:0;border-bottom:0}
-.tarot .corner.tr{top:15px;right:15px;border-left:0;border-bottom:0}
-.tarot .corner.bl{bottom:15px;left:15px;border-right:0;border-top:0}
-.tarot .corner.br{bottom:15px;right:15px;border-left:0;border-top:0}
-.tarot .tno{position:absolute;top:20px;left:0;right:0;text-align:center;
+.facecard:before{content:"";position:absolute;inset:8px;border:1px solid rgba(206,220,255,.13);pointer-events:none}
+.facecard.back{transform:rotateY(180deg)}
+.corner{position:absolute;width:13px;height:13px;border:1px solid rgba(236,242,255,.45)}
+.corner.tl{top:15px;left:15px;border-right:0;border-bottom:0}
+.corner.tr{top:15px;right:15px;border-left:0;border-bottom:0}
+.corner.bl{bottom:15px;left:15px;border-right:0;border-top:0}
+.corner.br{bottom:15px;right:15px;border-left:0;border-top:0}
+.tno{position:absolute;top:19px;left:0;right:0;text-align:center;
   font-family:Georgia,serif;font-size:9px;letter-spacing:.44em;color:rgba(214,226,246,.7)}
-.face{position:absolute;left:20px;right:20px;top:42px;bottom:20px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity .6s ease, transform .6s ease}
-.face-title{opacity:1}
-.face-text{opacity:0;transform:scale(.94)}
-.tarot.open .face-title{opacity:0;transform:scale(1.06)}
-.tarot.open .face-text{opacity:1;transform:none}
 .tname{writing-mode:vertical-rl;font-size:clamp(26px,6.8vw,38px);letter-spacing:.12em;
   line-height:1.2;color:#f1f4fc;margin:2px 0;
   text-shadow:0 0 28px rgba(200,216,255,.55),0 0 60px rgba(150,175,235,.3)}
 .ten{font-family:Georgia,serif;font-size:8px;letter-spacing:.34em;
   text-transform:uppercase;color:rgba(160,172,198,.9);margin-top:12px}
 .star{font-size:12px;color:rgba(230,240,255,.55);margin-top:12px}
-.fbody{font-size:12px;line-height:1.95;letter-spacing:.03em;color:#d5def2;
-  text-align:center;white-space:pre-wrap}
+.fbody{font-size:11.5px;line-height:2;letter-spacing:0;color:#d7e0f2;
+  text-align:center;white-space:pre-wrap;overflow:hidden}
 .fbody.big{writing-mode:vertical-rl;font-size:clamp(24px,6.4vw,34px);letter-spacing:.12em;
   line-height:1.25;color:#f1f4fc;white-space:normal;
   text-shadow:0 0 28px rgba(200,216,255,.55)}
@@ -261,16 +259,19 @@ body{position:relative}
     <div class="rule"></div>
     <div class="tarot" id="tarotCard">
       <div class="glow"></div>
-      <div class="frame">
-        <div class="corner tl"></div><div class="corner tr"></div>
-        <div class="corner bl"></div><div class="corner br"></div>
-        <div class="tno" id="vCardNo">I</div>
-        <div class="face face-title">
+      <div class="flipper">
+        <div class="facecard front">
+          <div class="corner tl"></div><div class="corner tr"></div>
+          <div class="corner bl"></div><div class="corner br"></div>
+          <div class="tno" id="vCardNo">I</div>
           <div class="tname" id="vName">&nbsp;</div>
           <div class="ten" id="vAliasEn"></div>
           <div class="star">✧</div>
         </div>
-        <div class="face face-text">
+        <div class="facecard back">
+          <div class="corner tl"></div><div class="corner tr"></div>
+          <div class="corner bl"></div><div class="corner br"></div>
+          <div class="tno">I</div>
           <div class="fbody" id="vFaceBody"></div>
         </div>
       </div>
@@ -365,9 +366,9 @@ var $ = function(id){ return document.getElementById(id); };
 var CARD = null, cur = 's1', BG = null;
 var DEFAULT_BGM = (function(){
   var p = location.pathname;
-  if (p.indexOf('/astra/p/') > -1) return '../../assets/bgm.mp3';
-  if (p.indexOf('/tpl/') > -1) return '../assets/bgm.mp3';
-  return 'assets/bgm.mp3';
+  if (p.indexOf('/astra/p/') > -1) return '../../assets/bgm-sink.mp3';
+  if (p.indexOf('/tpl/') > -1) return '../assets/bgm-sink.mp3';
+  return 'assets/bgm-sink.mp3';
 })();
 
 function esc(s){ return (s == null ? '' : String(s)); }
@@ -387,6 +388,7 @@ function go(id){
   $('btnBack').style.display = (id === 's1') ? 'none' : '';
   $('barL').textContent = (i + 1 < 10 ? '0' : '') + (i + 1) + ' / 07';
   var sc = $(id); if (sc) sc.scrollTop = 0;
+  if (id === 's1') resetTarot();
 }
 
 function fill(c){
@@ -543,20 +545,30 @@ function fill(c){
   if (bg){ bg.src = f.bgm || DEFAULT_BGM; BG = bg; }
 }
 
-/* 揭牌：第一次点翻面，牌下浮出选项；点选项进主界面 */
+/* 揭牌：点牌翻到反面（内容面），牌下浮出选项；点选项进主界面 */
 var tarot = $('tarotCard'), opened = false;
+function resetTarot(){
+  if (!tarot) return;
+  tarot.classList.remove('flipped');
+  tarot.classList.remove('revealed');
+  opened = false;
+  var ow = $('optWrap'); if (ow) ow.classList.remove('on');
+  var h = $('vHint'); if (h) h.textContent = 'Tap to reveal';
+}
 function enterMain(){
   if (tarot) tarot.classList.add('revealed');
-  setTimeout(function(){ go('s2'); }, 600);
+  setTimeout(function(){ go('s2'); }, 620);
 }
 if (tarot){
   tarot.onclick = function(){
     if (BG){ try{ BG.play(); }catch(e){} }
     if (!opened){
       opened = true;
-      tarot.classList.add('open');
+      tarot.classList.add('flipped');
       var h = $('vHint'); if (h) h.textContent = 'Tap again to enter';
-      var ow = $('optWrap'); if (ow) ow.classList.add('on');
+      setTimeout(function(){
+        var ow = $('optWrap'); if (ow) ow.classList.add('on');
+      }, 260);
       return;
     }
     enterMain();
