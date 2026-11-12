@@ -321,9 +321,11 @@
     astra: { name:'星轨文游', file:'../tpl/astra.html', pre:'a/',
       groups:[
         {g:'开场', rows:[
-          {k:'name', l:'名字（开场大标题）'},
+          {k:'name', l:'牌面标题（只填这个就是竖排大字）'},
           {k:'alias', l:'英文小名（会全大写显示）'},
-          {k:'brief', l:'开场副标题（一句话）'},
+          {k:'brief', l:'牌下面的一句话'},
+          {k:'tarotText', l:'牌面内容（留空就只显示竖排标题；填了按正常排版显示）', area:true, big:true},
+          {k:'optText', l:'翻牌后牌下的选项文字（留空显示“进入”）'},
           {k:'introBrand', l:'开场顶部小字'},
           {k:'introSub', l:'右侧竖排小字'},
         ]},
