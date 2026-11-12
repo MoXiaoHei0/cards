@@ -131,15 +131,6 @@ body{position:relative}
 
 /* 主界面 */
 .main-grid{display:flex;gap:26px;align-items:center;margin:8px 0 30px;flex-wrap:wrap}
-.portrait .halo{position:absolute;left:50%;top:50%;width:156%;height:156%;
-  transform:translate(-50%,-50%);background-image:var(--halo);
-  background-position:center;background-size:contain;background-repeat:no-repeat;
-  opacity:.52;pointer-events:none;animation:spin 54s linear infinite}
-@keyframes spin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
-.bell{width:104px;height:104px;margin:0 auto 6px;
-  background-image:var(--bell);background-position:center;background-size:contain;
-  background-repeat:no-repeat;opacity:.86}
-@media (max-width:560px){.bell{width:88px;height:88px}}
 .portrait{position:relative;flex:0 0 auto;width:132px;height:132px}
 .portrait img{width:100%;height:100%;object-fit:cover;border-radius:50%;
   filter:grayscale(.18) contrast(1.05) brightness(.95)}
@@ -301,7 +292,7 @@ body{position:relative}
     <div class="chap"><span class="no">02</span><span class="cn">主界面</span><span class="en">Main</span></div>
     <div class="rule"></div>
     <div class="main-grid">
-      <div class="portrait"><div class="halo"></div><img id="vAvatar" alt="" /><div class="ph" id="vPh">✧</div><div class="ring"></div><div class="ring2"></div></div>
+      <div class="portrait"><img id="vAvatar" alt="" /><div class="ph" id="vPh">✧</div><div class="ring"></div><div class="ring2"></div></div>
       <div class="main-txt">
         <div class="main-name" id="vName2"></div>
         <div class="main-alias" id="vAlias"></div>
@@ -362,7 +353,6 @@ body{position:relative}
   <div class="wrap">
     <div class="chap"><span class="no">07</span><span class="cn">尾声</span><span class="en">The End</span></div>
     <div class="rule"></div>
-    <div class="bell"></div>
     <div class="links" id="vLinks"></div>
     <div class="mnote" id="vNote"></div>
     <div class="rule dia" style="margin-top:34px"></div>
@@ -387,8 +377,6 @@ var ABASE = (function(){
   var st = document.documentElement.style;
   st.setProperty('--tfront', "url('" + ABASE + "tarot-front.jpg')");
   st.setProperty('--tback', "url('" + ABASE + "tarot-back.jpg')");
-  st.setProperty('--halo', "url('" + ABASE + "deco-halo.png')");
-  st.setProperty('--bell', "url('" + ABASE + "deco-bell.png')");
 })();
 (function(){
   var box = document.getElementById('ff'); if (!box) return;
