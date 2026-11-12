@@ -764,6 +764,8 @@ function edPublish(cb){
   var tok = (db.set || {}).token, repo = (db.set || {}).repo || 'MoXiaoHei0/cards';
   if (!tok) return cb('没找到授权码，先回工厂保存一次设置');
   var path = location.pathname.replace(/^\//, '');
+  var repoName = (repo.split('/')[1] || '');
+  if (repoName && path.indexOf(repoName + '/') === 0) path = path.slice(repoName.length + 1);
   var payload = '<script>window.__CARD__=' + JSON.stringify({ f: f, title: title }) + ';<\/script>';
   var html = RAW_HTML.replace(/<script>window\.__CARD__=[\s\S]*?<\/script>/, function(){ return payload; });
   html = html.replace(/<title>[\s\S]*?<\/title>/, '<title>' + title + '</title>');
