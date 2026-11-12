@@ -189,6 +189,7 @@
     </div>
     <div class="dlg-foot">
       <span id="dlgHint">填好内容，右边实时预览</span>
+      <button type="button" class="file-btn" id="btnBulk">批量填</button>
       <button class="gen" id="btnGen">保存并上线</button>
     </div>
   </div>
@@ -197,7 +198,7 @@
 <div class="mask" id="mLogin">
   <div class="box">
     <h3>沉潜 · 自介</h3>
-    <p>管理密码进管理端，进门密码进员工端</p>
+    <p>输入管理密码进入</p>
     <input id="loginInput" type="text" autocomplete="off" style="-webkit-text-security:disc;text-security:disc;letter-spacing:.22em;text-align:center" placeholder="请输入密码" />
     <div class="err" id="loginErr"></div>
     <div class="btns"><button class="primary" id="loginOk" type="button">进入</button></div>
@@ -256,6 +257,19 @@
     <div class="btns" style="margin-top:14px">
       <button id="resClose" type="button">关闭</button>
       <button class="primary" id="resOpen" type="button">打开看看</button>
+    </div>
+  </div>
+</div>
+
+<div class="mask" id="mBulk">
+  <div class="box" style="width:min(620px,94vw)">
+    <h3>批量填</h3>
+    <p style="color:#9a9a9a;font-size:12px;line-height:1.7;margin-bottom:10px">这里是这张卡当前的全部内容，一行一个字段，写成「字段名：内容」。<br>可以整段复制出去改（比如用手机备忘录），改完再整段贴回来，点「应用到表单」自动填进去。<br>长内容可以直接换行接着写，系统会接在同一段里。图片和音乐在这里放不了，要在页面上单独选。</p>
+    <textarea id="bulkText" spellcheck="false" style="width:100%;height:330px;box-sizing:border-box;font-size:13px;line-height:1.75;padding:10px;border-radius:8px"></textarea>
+    <div class="btns" style="margin-top:12px;flex-wrap:wrap">
+      <button type="button" id="bulkCopy">复制全文</button>
+      <button type="button" id="bulkClose">关闭</button>
+      <button type="button" class="primary" id="bulkApply">应用到表单</button>
     </div>
   </div>
 </div>
@@ -359,7 +373,7 @@
           {k:'other', l:'✦ 其他'},
         ]},
         {g:'须知', rows:[{k:'rules', l:'须知（一行一条）', lines:true, area:true, big:true}]},
-        {g:'链接（最多 5 条）', rows:[{k:'links', l:'一行一条：名称|网址|英文标注', links:true, area:true}]},
+        {g:'链接（最多 5 条）', rows:[{k:'links', l:'相关链接（一行一条：名称|网址|英文标注）', links:true, area:true}]},
         {g:'结尾与页脚', rows:[
           {k:'endLine', l:'结尾第一行'},
           {k:'endLine2', l:'结尾第二行'},
@@ -384,10 +398,10 @@
       return;
     }
     $('chipRole').style.display = '';
-    $('chipRole').textContent = (ROLE === 'admin') ? '管理端' : '员工端';
-    $('btnAdminPwd').style.display = (ROLE === 'admin') ? '' : 'none';
-    $('btnMemberPwd').style.display = (ROLE === 'admin') ? '' : 'none';
-    $('btnSet').style.display = (ROLE === 'admin') ? '' : 'none';
+    $('chipRole').textContent = '管理端';
+    $('btnAdminPwd').style.display = '';
+    $('btnMemberPwd').style.display = 'none';
+    $('btnSet').style.display = '';
     $('btnLogout').style.display = '';
   }
 
@@ -666,6 +680,161 @@
     for (var i = 0; i < ins.length; i++) ins[i].addEventListener('input', schedulePreview);
     schedulePreview();
   }
+
+  /* ---------- 批量填 ---------- */
+  function normLabel(s){
+    return (s || '').replace(/（[^）]*）/g, '').replace(/\([^)]*\)/g, '')
+      .replace(/^\s*\d+\s*[\.、]\s*/, '').replace(/[：:\s]/g, '').trim();
+  }
+
+  function bulkFieldMap(){
+    var map = {};
+    function put(lab, obj){
+      var n = normLabel(lab);
+      if (n) map[n] = obj;
+    }
+    put('标题', {k:'title'});
+    put('链接后缀', {k:'slug'});
+    put('卡片密码', {k:'cpwd'});
+    put('姓名', {k:'name'});
+    put('圈名', {k:'name'});
+    put('名字', {k:'name'});
+    TPL[curTpl].groups.forEach(function(g){
+      g.rows.forEach(function(r){
+        if (r.qa){
+          put(r.l, {k:r.k, part:'t'});
+          put(r.l + ' 选项', {k:r.k, part:'o'});
+        } else put(r.l, {k:r.k});
+      });
+    });
+    return map;
+  }
+
+  function bulkLookup(map, raw){
+    var n = normLabel(raw);
+    if (!n) return null;
+    if (map[n]) return map[n];
+    for (var key in map){
+      if (key.length > 1 && (key.indexOf(n) >= 0 || n.indexOf(key) >= 0)) return map[key];
+    }
+    return null;
+  }
+
+  function bulkTemplate(){
+    var lines = [];
+    var tv = $('fi_title'), sv = $('fi_slug'), pv = $('fi_cpwd');
+    lines.push('标题：' + (tv ? tv.value : ''));
+    lines.push('链接后缀：' + (sv ? sv.value : ''));
+    lines.push('卡片密码：' + (pv ? pv.value : ''));
+    TPL[curTpl].groups.forEach(function(g){
+      g.rows.forEach(function(r){
+        if (r.qa){
+          var t2 = $('fi_' + r.k + '_t'), o2 = $('fi_' + r.k + '_o');
+          lines.push(qaShort(r) + '：' + (t2 ? t2.value : ''));
+          lines.push(qaShort(r) + ' 选项：' + (o2 ? o2.value : ''));
+        } else {
+          var el = $('fi_' + r.k);
+          lines.push(r.l + '：' + (el ? el.value : ''));
+        }
+      });
+    });
+    return lines.join('\n');
+  }
+
+  function qaShort(r){
+    return (r.k === 'q1') ? '问题一' : (r.k === 'q2' ? '问题二' : '问答');
+  }
+
+  function bulkRawMap(){
+    var map = {};
+    function put(lab, obj){ if (lab) map[lab] = obj; }
+    put('标题', {k:'title'});
+    put('链接后缀', {k:'slug'});
+    put('卡片密码', {k:'cpwd'});
+    TPL[curTpl].groups.forEach(function(g){
+      g.rows.forEach(function(r){
+        if (r.qa){
+          put(qaShort(r), {k:r.k, part:'t'});
+          put(qaShort(r) + ' 选项', {k:r.k, part:'o'});
+          put(r.l, {k:r.k, part:'t'});
+          put(r.l + ' 选项', {k:r.k, part:'o'});
+        } else put(r.l, {k:r.k});
+      });
+    });
+    return map;
+  }
+
+  function bulkApply(){
+    var text = ($('bulkText') || {}).value || '';
+    if (!text.trim()){ toast('先粘贴内容'); return 0; }
+    var rawMap = bulkRawMap();
+    var aliasMap = bulkFieldMap();
+    var vals = {};
+    var cur = null;
+
+    text.split(/\r?\n/).forEach(function(line){
+      if (!line.trim()) return;
+      var hit = null, rest = '', bestLen = -1;
+      for (var lab in rawMap){
+        if (line.indexOf(lab) === 0){
+          var after = line.slice(lab.length).replace(/^[ \t]+/, '');
+          var c0 = after.charAt(0);
+          if (c0 === '：' || c0 === ':' || after === ''){
+            if (lab.length > bestLen){
+              bestLen = lab.length; hit = rawMap[lab];
+              rest = after.replace(/^[：:][ \t]*/, '');
+            }
+          }
+        }
+      }
+      if (!hit){
+        var m = line.match(/^\s*([^：:]{1,20})[：:]\s*(.*)$/);
+        if (m){
+          var h2 = bulkLookup(aliasMap, m[1]);
+          if (h2){ hit = h2; rest = m[2]; }
+        }
+      }
+      if (hit){
+        cur = hit;
+        var key = (cur.part || '') + cur.k;
+        vals[key] = (vals[key] === undefined) ? rest : vals[key] + '\n' + rest;
+      } else if (cur){
+        var key2 = (cur.part || '') + cur.k;
+        vals[key2] = (vals[key2] === undefined) ? line : vals[key2] + '\n' + line;
+      }
+    });
+
+    var filled = 0;
+    if (vals.title !== undefined && $('fi_title')){ $('fi_title').value = vals.title; filled++; }
+    if (vals.cpwd !== undefined && $('fi_cpwd')){ $('fi_cpwd').value = vals.cpwd; filled++; }
+    if (vals.slug !== undefined && $('fi_slug') && !slugManual){ $('fi_slug').value = vals.slug; filled++; }
+    TPL[curTpl].groups.forEach(function(g){
+      g.rows.forEach(function(r){
+        if (r.qa){
+          if (vals['t' + r.k] !== undefined && $('fi_' + r.k + '_t')){ $('fi_' + r.k + '_t').value = vals['t' + r.k]; filled++; }
+          if (vals['o' + r.k] !== undefined && $('fi_' + r.k + '_o')){ $('fi_' + r.k + '_o').value = vals['o' + r.k]; filled++; }
+        } else if (vals[r.k] !== undefined && $('fi_' + r.k)){
+          $('fi_' + r.k).value = vals[r.k]; filled++;
+        }
+      });
+    });
+    schedulePreview();
+    return filled;
+  }
+
+  $('btnBulk').addEventListener('click', function(){
+    $('bulkText').value = bulkTemplate();
+    $('mBulk').classList.add('show');
+    setTimeout(function(){ $('bulkText').focus(); }, 120);
+  });
+  $('bulkClose').addEventListener('click', function(){ $('mBulk').classList.remove('show'); });
+  $('bulkCopy').addEventListener('click', function(){ copyText($('bulkText').value, '全文已复制'); });
+  $('bulkApply').addEventListener('click', function(){
+    var n = bulkApply();
+    if (!n){ return; }
+    $('mBulk').classList.remove('show');
+    toast('已填入 ' + n + ' 个字段，有不合适的直接改');
+  });
 
   function compress(file, cb){
     var rd = new FileReader();
@@ -1055,7 +1224,6 @@
     var v = $('loginInput').value.trim();
     if (!v){ $('loginErr').textContent = '请输入密码'; return; }
     if (v === DB.pwd.admin){ CRED = v; ROLE = 'admin'; }
-    else if (v === DB.pwd.member){ CRED = v; ROLE = 'member'; }
     else { $('loginErr').textContent = '密码不对'; return; }
     try{ sessionStorage.setItem(SKEY, v); }catch(e){}
     $('mLogin').classList.remove('show');
@@ -1108,7 +1276,7 @@
   });
 
   if (CRED){
-    ROLE = (CRED === DB.pwd.admin) ? 'admin' : (CRED === DB.pwd.member ? 'member' : '');
+    ROLE = (CRED === DB.pwd.admin) ? 'admin' : '';
     if (!ROLE){ CRED = ''; try{ sessionStorage.removeItem(SKEY); }catch(e){} }
   }
   paintRole();
