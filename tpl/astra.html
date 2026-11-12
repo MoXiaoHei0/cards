@@ -62,18 +62,18 @@ body{position:relative}
 /* 开场：塔罗牌 */
 .tarot{position:relative;width:min(58vw,238px);aspect-ratio:5/7.6;margin:30px auto 0;
   cursor:pointer;perspective:1200px}
-.tarot .glow{position:absolute;inset:-16px;z-index:-1;pointer-events:none;border-radius:3px;
+.tarot .glow{position:absolute;inset:-7px;z-index:-1;pointer-events:none;border-radius:2px;
   box-shadow:
-    0 0 20px 5px rgba(255,255,255,.17),
-    0 0 42px 13px rgba(255,255,255,.11),
-    0 0 78px 26px rgba(255,255,255,.06),
-    0 0 130px 46px rgba(235,242,255,.035);
+    0 0 12px 2px rgba(255,255,255,.2),
+    0 0 26px 6px rgba(255,255,255,.12),
+    0 0 50px 14px rgba(255,255,255,.06),
+    0 0 88px 24px rgba(235,242,255,.03);
   animation:glow 4.4s ease-in-out infinite}
 @keyframes glow{0%,100%{opacity:.66}50%{opacity:1}}
 .tarot .flipper{position:absolute;inset:0;transform-style:preserve-3d;
   transition:transform .96s cubic-bezier(.45,.06,.24,1)}
 .tarot.flipped .flipper{transform:rotateY(180deg)}
-.facecard{position:absolute;inset:0;padding:56px 42px 60px;
+.facecard{position:absolute;inset:0;padding:0;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   background:#05070d center/100% 100% no-repeat;
@@ -95,6 +95,7 @@ body{position:relative}
   text-transform:uppercase;color:rgba(160,172,198,.9);margin-top:12px}
 .star{font-size:12px;color:rgba(230,240,255,.55);margin-top:12px}
 .fbody{font-size:11px;line-height:1.95;letter-spacing:0;color:#dae2f2;
+  width:100%;padding:44px 42px;box-sizing:border-box;
   text-align:center;white-space:pre-wrap;overflow:hidden}
 .fbody.big{writing-mode:vertical-rl;font-size:clamp(24px,6.4vw,34px);letter-spacing:.12em;
   line-height:1.25;color:#f1f4fc;white-space:normal;
@@ -215,6 +216,14 @@ body{position:relative}
 .mnote{font-size:11px;color:rgba(201,168,106,.6);letter-spacing:.1em;
   margin-top:22px;line-height:2;font-style:italic}
 
+/* fuorescent */
+.fireflies{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
+.fireflies span{position:absolute;border-radius:50%;background:rgba(200,238,255,.95);
+  box-shadow:0 0 5px rgba(170,225,255,.95),0 0 13px rgba(110,185,255,.6);
+  animation:ffmove linear infinite, fffade ease-in-out infinite}
+@keyframes ffmove{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(var(--dx),var(--dy),0)}100%{transform:translate3d(0,0,0)}}
+@keyframes fffade{0%,100%{opacity:.1}50%{opacity:.88}}
+@media (max-width:560px){.fireflies span{box-shadow:0 0 4px rgba(170,225,255,.85),0 0 9px rgba(110,185,255,.5)}}
 @media (max-width:560px){
   .wrap{padding:52px 20px 96px}
   .tarot{width:min(64vw,228px);margin:24px auto 0}
@@ -249,6 +258,7 @@ body{position:relative}
 <!--__CARD_JSON__-->
 
 <div id="stars"></div>
+<div class="fireflies" id="ff"></div>
 <audio id="bgm" loop preload="auto"></audio>
 <button class="editbtn" id="btnEdit" title="编辑这张卡">✎</button>
 
@@ -364,6 +374,23 @@ var ABASE = (function(){
   var st = document.documentElement.style;
   st.setProperty('--tfront', "url('" + ABASE + "tarot-front.jpg')");
   st.setProperty('--tback', "url('" + ABASE + "tarot-back.jpg')");
+})();
+(function(){
+  var box = document.getElementById('ff'); if (!box) return;
+  var n = (document.body.clientWidth < 560) ? 22 : 30;
+  for (var i = 0; i < n; i++){
+    var s = document.createElement('span');
+    var d = Math.random() * 2.4 + 1.5;
+    s.style.left = (Math.random() * 97).toFixed(1) + '%';
+    s.style.top = (Math.random() * 95).toFixed(1) + '%';
+    s.style.width = d.toFixed(1) + 'px';
+    s.style.height = d.toFixed(1) + 'px';
+    s.style.setProperty('--dx', (Math.random() * 40 - 20).toFixed(0) + 'px');
+    s.style.setProperty('--dy', (Math.random() * 70 - 35).toFixed(0) + 'px');
+    s.style.animationDuration = (Math.random() * 14 + 15).toFixed(1) + 's, ' + (Math.random() * 4 + 3).toFixed(1) + 's';
+    s.style.animationDelay = '-' + (Math.random() * 20).toFixed(1) + 's, -' + (Math.random() * 4).toFixed(1) + 's';
+    box.appendChild(s);
+  }
 })();
 var DEFAULT_BGM = (function(){
   var p = location.pathname;
