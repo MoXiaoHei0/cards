@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>档案</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#e9edf7; --dim:#8b96b3; --gold:#c9a86a; --line:rgba(206,220,255,.16);
+  --panel:rgba(12,17,30,.55); --deep:#05070d;
+}
+html,body{height:100%;background:var(--deep);color:var(--ink);
+  font-family:"Songti SC","Noto Serif SC",Georgia,"Times New Roman",serif;
+  -webkit-font-smoothing:antialiased;overflow:hidden}
+body{position:relative}
+
+/* 星空底 */
+#stars{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(1200px 700px at 18% 8%, rgba(88,120,190,.22), transparent 62%),
+    radial-gradient(900px 600px at 82% 22%, rgba(120,96,180,.18), transparent 60%),
+    radial-gradient(760px 520px at 50% 92%, rgba(40,70,130,.22), transparent 64%),
+    linear-gradient(180deg,#05070d 0%,#080c16 48%,#04060b 100%);}
+#stars:after{content:"";position:absolute;inset:0;opacity:.5;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.65), transparent),
+    radial-gradient(1px 1px at 34% 62%, rgba(255,255,255,.5), transparent),
+    radial-gradient(1px 1px at 67% 12%, rgba(255,255,255,.7), transparent),
+    radial-gradient(1px 1px at 86% 44%, rgba(255,255,255,.45), transparent),
+    radial-gradient(1px 1px at 48% 78%, rgba(255,255,255,.55), transparent),
+    radial-gradient(1px 1px at 22% 88%, rgba(255,255,255,.35), transparent),
+    radial-gradient(1.5px 1.5px at 74% 68%, rgba(201,168,106,.55), transparent),
+    radial-gradient(1px 1px at 6% 54%, rgba(255,255,255,.4), transparent);}
+
+/* 屏 */
+.screen{position:fixed;inset:0;z-index:2;overflow-y:auto;overflow-x:hidden;
+  opacity:0;visibility:hidden;transform:translateY(14px);
+  transition:opacity .72s ease, transform .72s ease, visibility .72s;
+  -webkit-overflow-scrolling:touch}
+.screen.on{opacity:1;visibility:visible;transform:none}
+
+.wrap{max-width:660px;margin:0 auto;padding:64px 26px 104px;position:relative;
+  min-height:100dvh;display:flex;flex-direction:column;justify-content:safe center}
+
+/* 顶部小标 */
+.kicker{font-family:Georgia,serif;font-size:10px;letter-spacing:.42em;
+  text-transform:uppercase;color:var(--dim);text-align:center}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);
+  margin:18px 0}
+.rule.dia{height:auto;background:none;text-align:center;margin:26px 0}
+.rule.dia:after{content:"◇";position:static;transform:none;background:none;padding:0;
+  display:inline-block;font-size:12px;color:rgba(201,168,106,.75)}
+
+/* 章节头 */
+.chap{display:flex;align-items:baseline;gap:10px;margin-bottom:22px}
+.chap .no{font-size:11px;letter-spacing:.2em;color:var(--gold)}
+.chap .cn{font-size:19px;letter-spacing:.18em}
+.chap .en{font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:var(--dim);margin-left:auto}
+
+/* 开场 */
+.hero{font-size:clamp(42px,11vw,74px);letter-spacing:.16em;line-height:1.24;
+  text-align:center;margin:10px 0 8px;
+  text-shadow:0 0 34px rgba(140,170,240,.42),0 0 90px rgba(90,120,200,.22)}
+.hero-en{text-align:center;font-family:Georgia,serif;font-size:10px;letter-spacing:.46em;
+  text-transform:uppercase;color:rgba(139,150,179,.9);margin-top:0}
+.hero-sub{text-align:center;font-style:italic;font-size:14px;letter-spacing:.1em;
+  color:#b9c4dc;margin-top:14px;line-height:1.9}
+.enter{display:block;margin:46px auto 0;padding:13px 46px;background:transparent;
+  border:1px solid rgba(206,220,255,.34);color:var(--ink);font-family:inherit;
+  font-size:13px;letter-spacing:.34em;cursor:pointer;border-radius:1px;
+  transition:.45s;position:relative;overflow:hidden}
+.enter:before{content:"";position:absolute;inset:0;background:rgba(160,190,255,.14);
+  transform:translateX(-101%);transition:.55s}
+.enter:hover:before{transform:none}
+.enter span{position:relative}
+.vert{position:absolute;top:96px;right:24px;writing-mode:vertical-rl;
+  font-size:10px;letter-spacing:.4em;color:rgba(201,168,106,.5)}
+
+/* 主界面 */
+.main-grid{display:flex;gap:26px;align-items:center;margin:8px 0 30px;flex-wrap:wrap}
+.portrait{position:relative;flex:0 0 auto;width:132px;height:132px}
+.portrait img{width:100%;height:100%;object-fit:cover;border-radius:50%;
+  filter:grayscale(.18) contrast(1.05) brightness(.95)}
+.portrait .ph{position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  font-size:36px;letter-spacing:.1em;color:rgba(201,168,106,.55);
+  border:1px solid rgba(206,220,255,.14);border-radius:50%;
+  background:radial-gradient(circle at 50% 40%,rgba(80,110,180,.22),rgba(8,11,20,.6))}
+.portrait .ring{position:absolute;inset:-13px;border-radius:50%;
+  border:1px dashed rgba(201,168,106,.45);animation:spin 26s linear infinite}
+.portrait .ring2{position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid rgba(206,220,255,.22)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.main-txt{flex:1 1 240px;min-width:0}
+.main-name{font-size:34px;letter-spacing:.14em;line-height:1.3}
+.main-alias{font-size:12px;letter-spacing:.22em;color:var(--dim);margin-top:8px}
+.touts{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.tout{font-size:11px;letter-spacing:.12em;padding:5px 11px;
+  border:1px solid var(--line);color:#cfd8ee;border-radius:1px}
+
+/* 入口四格 */
+.doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.door{background:rgba(14,19,34,.62);border:1px solid var(--line);border-radius:2px;
+  padding:18px 10px 14px;text-align:center;cursor:pointer;transition:.35s;
+  position:relative}
+.door:hover{border-color:rgba(201,168,106,.55);background:rgba(24,32,52,.7)}
+.door .sym{font-size:17px;color:var(--gold);display:block;margin-bottom:9px}
+.door .cn{font-size:13px;letter-spacing:.2em}
+.door .en{font-size:8px;letter-spacing:.3em;color:var(--dim);
+  text-transform:uppercase;margin-top:5px;display:block}
+
+/* 属性 */
+.attr-row{display:flex;align-items:center;gap:14px;margin-bottom:15px}
+.attr-k{flex:0 0 88px;font-size:12px;letter-spacing:.14em;color:#c6d0e8}
+.attr-bar{flex:1 1 auto;height:2px;background:rgba(206,220,255,.13);position:relative}
+.attr-bar i{position:absolute;left:0;top:0;height:2px;display:block;
+  background:linear-gradient(90deg,rgba(201,168,106,.85),rgba(206,220,255,.5))}
+.attr-v{flex:0 0 34px;text-align:right;font-size:10px;color:var(--dim);letter-spacing:.1em}
+
+/* 任务 */
+.task{display:flex;gap:14px;padding:16px;border:1px solid var(--line);
+  background:var(--panel);margin-bottom:10px}
+.task .t-no{font-size:10px;color:var(--gold);letter-spacing:.2em;flex:0 0 auto;padding-top:3px}
+.task .t-tt{font-size:13px;letter-spacing:.12em;margin-bottom:5px}
+.task .t-ds{font-size:12px;color:#a9b4cd;line-height:1.8}
+.tick{display:flex;gap:10px;align-items:flex-start;padding:9px 0;
+  border-bottom:1px solid rgba(206,220,255,.07);font-size:12.5px;color:#bcc7de;line-height:1.7}
+.tick b{flex:0 0 12px;height:12px;border:1px solid rgba(206,220,255,.3);margin-top:3px}
+
+/* 剧情 */
+.plot{padding:18px 16px;border-left:2px solid rgba(201,168,106,.4);
+  background:linear-gradient(90deg,rgba(201,168,106,.06),transparent 70%);
+  margin-bottom:12px;font-size:13.5px;line-height:2.05;color:#cdd6ea;letter-spacing:.02em}
+.plot .pno{font-size:9px;letter-spacing:.3em;color:var(--gold);display:block;margin-bottom:7px}
+
+/* 寻灵 */
+.cards2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.sumcard{position:relative;min-height:150px;border:1px solid var(--line);
+  background:var(--panel);cursor:pointer;padding:18px 16px;transition:.5s;
+  overflow:hidden}
+.sumcard .sq{font-size:13px;line-height:1.9;letter-spacing:.06em;color:#d7dff2}
+.sumcard .sa{margin-top:14px;font-size:12px;color:var(--gold);line-height:1.9;
+  opacity:0;transition:opacity .5s}
+.sumcard.flip .sa{opacity:1}
+.sumcard .hint{position:absolute;right:12px;bottom:10px;font-size:9px;
+  letter-spacing:.28em;color:rgba(139,150,179,.7);text-transform:uppercase}
+
+/* 尾声 */
+.links a{display:flex;justify-content:space-between;align-items:center;gap:14px;
+  padding:13px 2px;border-bottom:1px solid rgba(206,220,255,.1);
+  color:#dbe3f6;text-decoration:none;font-size:13px;letter-spacing:.06em}
+.links a span.k{font-size:10px;letter-spacing:.26em;color:var(--dim);text-transform:uppercase}
+.links a:hover{color:var(--gold)}
+
+/* 底部栏 */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;
+  justify-content:space-between;align-items:center;padding:12px 20px;
+  font-size:10px;letter-spacing:.24em;color:rgba(139,150,179,.85);
+  background:linear-gradient(0deg,rgba(5,7,13,.94),transparent);
+  pointer-events:none}
+.bar button{pointer-events:auto;background:none;border:1px solid rgba(206,220,255,.2);
+  color:#bcc7de;font-family:inherit;font-size:10px;letter-spacing:.24em;
+  padding:8px 16px;cursor:pointer;border-radius:1px}
+.bar button:hover{border-color:rgba(201,168,106,.55);color:var(--gold)}
+
+.mnote{font-size:11px;color:rgba(201,168,106,.6);letter-spacing:.1em;
+  margin-top:22px;line-height:2;font-style:italic}
+
+@media (max-width:560px){
+  .wrap{padding:52px 20px 96px}
+  .hero{font-size:clamp(30px,9.2vw,40px);letter-spacing:.1em;margin:8px 0 4px}
+  .hero-en{font-size:9px;letter-spacing:.34em}
+  .hero-sub{font-size:12.5px;line-height:1.95;margin-top:10px}
+  .enter{margin-top:36px;padding:14px 38px;font-size:12px;min-height:46px}
+  .chap .cn{font-size:17px}
+  .chap .en{display:none}
+  .main-grid{flex-direction:column;align-items:center;text-align:center;gap:16px;margin:4px 0 22px}
+  .portrait{width:96px;height:96px}
+  .main-txt{flex:none;width:100%}
+  .main-name{font-size:26px}
+  .touts{justify-content:center}
+  .doors{grid-template-columns:1fr 1fr;gap:9px}
+  .door{padding:17px 8px 13px;min-height:78px}
+  .attr-k{flex:0 0 64px;font-size:11px;letter-spacing:.1em}
+  .attr-v{flex:0 0 28px;font-size:9px}
+  .task{padding:14px}
+  .task .t-tt{font-size:12px}
+  .task .t-ds{font-size:11.5px}
+  .tick{font-size:12px}
+  .plot{padding:15px 13px;font-size:12.5px;line-height:1.95}
+  .sumcard{min-height:128px;padding:15px 14px}
+  .bar{padding:11px 18px calc(11px + env(safe-area-inset-bottom))}
+  .bar button{padding:10px 18px;min-height:42px}
+  .vert{display:none}
+}
+</style>
+</head>
+<body>
+<!--__CARD_JSON__-->
+
+<div id="stars"></div>
+<audio id="bgm" loop preload="none"></audio>
+
+<!-- 01 开场 -->
+<section class="screen" id="s1">
+  <div class="wrap" style="text-align:center">
+    <div class="kicker" id="vBrand">A CERTAIN PERSON</div>
+    <div class="rule"></div>
+    <h1 class="hero" id="vName">&nbsp;</h1>
+    <div class="hero-en" id="vAliasEn"></div>
+    <div class="hero-sub" id="vBrief"></div>
+    <div class="rule dia" style="margin-top:36px"></div>
+    <button class="enter" id="btnEnter"><span>进 入</span></button>
+  </div>
+  <div class="vert" id="vSub"></div>
+</section>
+
+<!-- 02 主界面 -->
+<section class="screen" id="s2">
+  <div class="wrap">
+    <div class="chap"><span class="no">02</span><span class="cn">主界面</span><span class="en">Main</span></div>
+    <div class="rule"></div>
+    <div class="main-grid">
+      <div class="portrait"><img id="vAvatar" alt="" /><div class="ph" id="vPh">✧</div><div class="ring"></div><div class="ring2"></div></div>
+      <div class="main-txt">
+        <div class="main-name" id="vName2"></div>
+        <div class="main-alias" id="vAlias"></div>
+        <div class="touts" id="vTouts"></div>
+      </div>
+    </div>
+    <div class="doors">
+      <div class="door" data-go="s3"><span class="sym">◈</span><span class="cn">属性</span><span class="en">Attribute</span></div>
+      <div class="door" data-go="s4"><span class="sym">✦</span><span class="cn">任务</span><span class="en">Task</span></div>
+      <div class="door" data-go="s5"><span class="sym">❖</span><span class="cn">剧情</span><span class="en">Plot</span></div>
+      <div class="door" data-go="s6"><span class="sym">✧</span><span class="cn">寻灵</span><span class="en">Summon</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 属性 -->
+<section class="screen" id="s3">
+  <div class="wrap">
+    <div class="chap"><span class="no">03</span><span class="cn">属性</span><span class="en">Attribute</span></div>
+    <div class="rule"></div>
+    <div id="vAttrs"></div>
+    <div class="rule dia" style="margin-top:26px"></div>
+    <div class="touts" id="vTouts2"></div>
+  </div>
+</section>
+
+<!-- 04 任务 -->
+<section class="screen" id="s4">
+  <div class="wrap">
+    <div class="chap"><span class="no">04</span><span class="cn">任务</span><span class="en">Task</span></div>
+    <div class="rule"></div>
+    <div id="vTasks"></div>
+    <div style="margin-top:26px" id="vTicks"></div>
+  </div>
+</section>
+
+<!-- 05 剧情 -->
+<section class="screen" id="s5">
+  <div class="wrap">
+    <div class="chap"><span class="no">05</span><span class="cn">剧情</span><span class="en">Plot</span></div>
+    <div class="rule"></div>
+    <div id="vPlots"></div>
+    <button class="enter" id="btnMore" style="margin-top:30px"><span>继 续</span></button>
+  </div>
+</section>
+
+<!-- 06 寻灵 -->
+<section class="screen" id="s6">
+  <div class="wrap">
+    <div class="chap"><span class="no">06</span><span class="cn">寻灵</span><span class="en">Summon</span></div>
+    <div class="rule"></div>
+    <div class="cards2" id="vSum"></div>
+  </div>
+</section>
+
+<!-- 07 尾声 -->
+<section class="screen" id="s7">
+  <div class="wrap">
+    <div class="chap"><span class="no">07</span><span class="cn">尾声</span><span class="en">The End</span></div>
+    <div class="rule"></div>
+    <div class="links" id="vLinks"></div>
+    <div class="mnote" id="vNote"></div>
+    <div class="rule dia" style="margin-top:34px"></div>
+    <div style="text-align:center;font-size:10px;letter-spacing:.3em;color:var(--dim)" id="vFoot"></div>
+  </div>
+</section>
+
+<div class="bar"><span id="barL"></span><button id="btnBack" style="display:none">返 回</button></div>
+
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var CARD = null, cur = 's1', BG = null;
+
+function esc(s){ return (s == null ? '' : String(s)); }
+function put(el, txt){ if (el) el.textContent = esc(txt); }
+function div(cls, txt){ var d = document.createElement('div'); d.className = cls; if (txt != null) d.textContent = txt; return d; }
+
+var ORDER = ['s1','s2','s3','s4','s5','s6','s7'];
+
+function go(id){
+  var i = ORDER.indexOf(id); if (i < 0) return;
+  cur = id;
+  for (var k = 0; k < ORDER.length; k++){
+    var s = $(ORDER[k]);
+    if (!s) continue;
+    if (ORDER[k] === id) s.classList.add('on'); else s.classList.remove('on');
+  }
+  $('btnBack').style.display = (id === 's1') ? 'none' : '';
+  $('barL').textContent = (i + 1 < 10 ? '0' : '') + (i + 1) + ' / 07';
+  var sc = $(id); if (sc) sc.scrollTop = 0;
+}
+
+function fill(c){
+  CARD = c || {};
+  var f = (c && c.f) || {};
+
+  put($('vBrand'), f.introBrand || 'A CERTAIN PERSON');
+  put($('vSub'), f.introSub || '');
+  put($('vName'), f.name || '未命名');
+  put($('vName2'), f.name || '未命名');
+  put($('vAliasEn'), (f.alias || '').toUpperCase());
+  put($('vAlias'), f.alias || '');
+  put($('vBrief'), f.brief || '');
+  document.title = (c && c.title) || f.name || '档案';
+
+  var av = $('vAvatar'), ph = $('vPh');
+  if (av){
+    if (f.avatar){ av.src = f.avatar; av.style.display = ''; if (ph) ph.style.display = 'none'; }
+    else {
+      av.style.display = 'none';
+      if (ph){
+        ph.style.display = 'flex';
+        ph.textContent = (f.name || '✧').slice(0, 1);
+      }
+    }
+  }
+
+  /* 称号 */
+  var tags = f.tags || [];
+  ['vTouts','vTouts2'].forEach(function(id){
+    var box = $(id); if (!box) return;
+    box.innerHTML = '';
+    tags.forEach(function(t){ if (t) box.appendChild(div('tout', t)); });
+  });
+
+  /* 属性条 */
+  var attrs = $('vAttrs'); if (attrs){
+    attrs.innerHTML = '';
+    var list = (f.style && f.style.length) ? f.style : tags;
+    list.forEach(function(name, i){
+      if (!name) return;
+      var row = document.createElement('div'); row.className = 'attr-row';
+      var k = div('attr-k', name);
+      var bar = document.createElement('div'); bar.className = 'attr-bar';
+      var it = document.createElement('i');
+      var w = 92 - i * 11; if (w < 34) w = 34;
+      it.style.width = w + '%';
+      bar.appendChild(it);
+      var v = div('attr-v', String(90 - i * 6));
+      row.appendChild(k); row.appendChild(bar); row.appendChild(v);
+      attrs.appendChild(row);
+    });
+  }
+
+  /* 任务：时间 + 须知 */
+  var tasks = $('vTasks');
+  if (tasks){
+    tasks.innerHTML = '';
+    var tt = [];
+    if (f.workday) tt.push({t:'工作日 · 周中', d:f.workday});
+    if (f.weekend) tt.push({t:'休息日 · 周末', d:f.weekend});
+    tt.forEach(function(x, i){
+      var box = document.createElement('div'); box.className = 'task';
+      var no = div('t-no', '0' + (i + 1));
+      var txt = document.createElement('div');
+      var a = div('t-tt', x.t); var b = div('t-ds', x.d);
+      txt.appendChild(a); txt.appendChild(b);
+      box.appendChild(no); box.appendChild(txt);
+      tasks.appendChild(box);
+    });
+  }
+  var ticks = $('vTicks');
+  if (ticks){
+    ticks.innerHTML = '';
+    var rules = f.rules || [];
+    if (rules.length){
+      var h = document.createElement('div');
+      h.className = 'kicker'; h.style.textAlign = 'left';
+      h.style.marginBottom = '14px'; h.textContent = 'RULES';
+      ticks.appendChild(h);
+    }
+    rules.forEach(function(r){
+      if (!r) return;
+      var row = document.createElement('div'); row.className = 'tick';
+      var b = document.createElement('b');
+      row.appendChild(b);
+      row.appendChild(div('', r));
+      ticks.appendChild(row);
+    });
+  }
+
+  /* 剧情：正文按段落拆 */
+  var plots = $('vPlots');
+  if (plots){
+    plots.innerHTML = '';
+    var body = (f.about || '').trim();
+    var paras = body ? body.split(/\n+/).filter(function(s){ return s.trim(); }) : [];
+    paras.forEach(function(p, i){
+      var box = div('plot');
+      var no = document.createElement('span'); no.className = 'pno';
+      no.textContent = 'CHAPTER ' + ('0' + (i + 1)).slice(-2);
+      box.appendChild(no);
+      box.appendChild(document.createTextNode(p.trim()));
+      plots.appendChild(box);
+    });
+  }
+
+  /* 寻灵：两道问答 */
+  var sum = $('vSum');
+  if (sum){
+    sum.innerHTML = '';
+    [{k:'q1', n:'I'}, {k:'q2', n:'II'}].forEach(function(q){
+      var o = f[q.k];
+      if (!o || !o.text) return;
+      var card = document.createElement('div'); card.className = 'sumcard';
+      var sq = div('sq', o.text);
+      var sa = div('sa', (o.choices || []).join('　／　'));
+      var hint = div('hint', 'TAP');
+      card.appendChild(sq); card.appendChild(sa); card.appendChild(hint);
+      card.onclick = function(){ card.classList.toggle('flip'); };
+      sum.appendChild(card);
+    });
+  }
+
+  /* 尾声：链接 + 批注 + 页脚 */
+  var links = $('vLinks');
+  if (links){
+    links.innerHTML = '';
+    (f.links || []).forEach(function(x){
+      if (!x || !x.label) return;
+      var a = document.createElement('a');
+      a.href = x.url || 'javascript:void(0)';
+      if (x.url) { a.target = '_blank'; a.rel = 'noopener'; }
+      var l = document.createElement('span'); l.textContent = x.label;
+      var k = document.createElement('span'); k.className = 'k'; k.textContent = x.key || 'LINK';
+      a.appendChild(l); a.appendChild(k);
+      links.appendChild(a);
+    });
+  }
+  put($('vNote'), [f.scribble1, f.scribble2].filter(Boolean).join('　'));
+  put($('vFoot'), f.footer1 || '');
+
+  /* 背景音乐 */
+  var bg = $('bgm');
+  if (bg && f.bgm){ bg.src = f.bgm; BG = bg; }
+}
+
+/* 翻页 */
+$('btnEnter').onclick = function(){
+  if (BG){ try{ BG.play(); }catch(e){} }
+  go('s2');
+};
+$('btnBack').onclick = function(){
+  if (cur === 's2') go('s1'); else go('s2');
+};
+var doors = document.querySelectorAll('.door');
+for (var i = 0; i < doors.length; i++){
+  doors[i].onclick = function(){ go(this.getAttribute('data-go')); };
+}
+$('btnMore').onclick = function(){ go('s2'); };
+
+/* 键盘 */
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') go('s2');
+});
+
+/* 启动 */
+var INLINE = window.__CARD__ || null;
+if (INLINE){
+  fill(INLINE);
+  go('s1');
+  return;
+}
+var DRAFT = /(\?|&)draft=1/.test(location.search);
+if (DRAFT){
+  fill({ f:{ name:'预览', brief:'平台里的实时预览', about:'第一段\n第二段' }, title:'预览' });
+  go('s1');
+  window.addEventListener('message', function(e){
+    var d = e.data;
+    if (d && d.type === 'draft' && d.card){
+      fill(d.card);
+    }
+  });
+  window.parent.postMessage({ type:'ready' }, '*');
+  return;
+}
+fill({ f:{ name:'未命名' } });
+go('s1');
+})();
+</script>
+</body>
+</html>
