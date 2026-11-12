@@ -7,6 +7,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
+  --tfront:none; --tback:none;
   --ink:#e9edf7; --dim:#8b96b3; --gold:#c9a86a; --line:rgba(206,220,255,.16);
   --panel:rgba(12,17,30,.55); --deep:#05070d;
 }
@@ -72,15 +73,14 @@ body{position:relative}
 .tarot .flipper{position:absolute;inset:0;transform-style:preserve-3d;
   transition:transform .96s cubic-bezier(.45,.06,.24,1)}
 .tarot.flipped .flipper{transform:rotateY(180deg)}
-.facecard{position:absolute;inset:0;padding:46px 17px 24px;
+.facecard{position:absolute;inset:0;padding:56px 42px 60px;
   backface-visibility:hidden;-webkit-backface-visibility:hidden;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  border:1px solid rgba(228,236,250,.34);
-  background:linear-gradient(168deg,#141c30 0%,#0a0f1b 56%,#070a12 100%);
-  box-shadow:inset 0 0 58px -12px rgba(210,226,255,.26);
+  background:#05070d center/100% 100% no-repeat;
+  background-origin:border-box;background-clip:border-box;
   overflow:hidden}
-.facecard:before{content:"";position:absolute;inset:8px;border:1px solid rgba(206,220,255,.13);pointer-events:none}
-.facecard.back{transform:rotateY(180deg)}
+.facecard.front{background-image:var(--tfront)}
+.facecard.back{transform:rotateY(180deg);background-image:var(--tback)}
 .corner{position:absolute;width:13px;height:13px;border:1px solid rgba(236,242,255,.45)}
 .corner.tl{top:15px;left:15px;border-right:0;border-bottom:0}
 .corner.tr{top:15px;right:15px;border-left:0;border-bottom:0}
@@ -94,7 +94,7 @@ body{position:relative}
 .ten{font-family:Georgia,serif;font-size:8px;letter-spacing:.34em;
   text-transform:uppercase;color:rgba(160,172,198,.9);margin-top:12px}
 .star{font-size:12px;color:rgba(230,240,255,.55);margin-top:12px}
-.fbody{font-size:11.5px;line-height:2;letter-spacing:0;color:#d7e0f2;
+.fbody{font-size:11px;line-height:1.95;letter-spacing:0;color:#dae2f2;
   text-align:center;white-space:pre-wrap;overflow:hidden}
 .fbody.big{writing-mode:vertical-rl;font-size:clamp(24px,6.4vw,34px);letter-spacing:.12em;
   line-height:1.25;color:#f1f4fc;white-space:normal;
@@ -260,18 +260,8 @@ body{position:relative}
     <div class="tarot" id="tarotCard">
       <div class="glow"></div>
       <div class="flipper">
-        <div class="facecard front">
-          <div class="corner tl"></div><div class="corner tr"></div>
-          <div class="corner bl"></div><div class="corner br"></div>
-          <div class="tno" id="vCardNo">I</div>
-          <div class="tname" id="vName">&nbsp;</div>
-          <div class="ten" id="vAliasEn"></div>
-          <div class="star">✧</div>
-        </div>
+        <div class="facecard front"></div>
         <div class="facecard back">
-          <div class="corner tl"></div><div class="corner tr"></div>
-          <div class="corner bl"></div><div class="corner br"></div>
-          <div class="tno">I</div>
           <div class="fbody" id="vFaceBody"></div>
         </div>
       </div>
@@ -364,6 +354,17 @@ body{position:relative}
 'use strict';
 var $ = function(id){ return document.getElementById(id); };
 var CARD = null, cur = 's1', BG = null;
+var ABASE = (function(){
+  var p = location.pathname;
+  if (p.indexOf('/astra/p/') > -1) return '../../assets/';
+  if (p.indexOf('/tpl/') > -1) return '../assets/';
+  return 'assets/';
+})();
+(function(){
+  var st = document.documentElement.style;
+  st.setProperty('--tfront', "url('" + ABASE + "tarot-front.jpg')");
+  st.setProperty('--tback', "url('" + ABASE + "tarot-back.jpg')");
+})();
 var DEFAULT_BGM = (function(){
   var p = location.pathname;
   if (p.indexOf('/astra/p/') > -1) return '../../assets/bgm-sink.mp3';
