@@ -62,32 +62,52 @@ body{position:relative}
 .tarot{position:relative;width:min(58vw,238px);aspect-ratio:5/7.6;margin:30px auto 0;
   cursor:pointer;transform-style:preserve-3d;perspective:900px;
   transition:transform .76s cubic-bezier(.32,.74,.28,1), opacity .76s}
-.tarot .glow{position:absolute;inset:-64px;z-index:-1;pointer-events:none;
-  background:
-    radial-gradient(circle at 50% 46%,rgba(236,204,138,.55),rgba(214,176,104,.24) 36%,rgba(160,128,70,.08) 56%,transparent 72%);
-  animation:glow 4.2s ease-in-out infinite}
-@keyframes glow{0%,100%{opacity:.62;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
-.tarot .frame{position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:16px;
-  border:1px solid rgba(201,168,106,.5);
+.tarot .glow{position:absolute;inset:-16px;z-index:-1;pointer-events:none;border-radius:3px;
+  box-shadow:
+    0 0 20px 5px rgba(255,255,255,.17),
+    0 0 42px 13px rgba(255,255,255,.11),
+    0 0 78px 26px rgba(255,255,255,.06),
+    0 0 130px 46px rgba(235,242,255,.035);
+  animation:glow 4.4s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:.66}50%{opacity:1}}
+.tarot .frame{position:absolute;inset:0;
+  border:1px solid rgba(228,236,250,.34);
   background:linear-gradient(168deg,#141c30 0%,#0a0f1b 56%,#070a12 100%);
-  box-shadow:0 0 42px -8px rgba(214,176,104,.55), 0 26px 64px -22px rgba(0,0,0,.92),
-    inset 0 0 52px -10px rgba(214,176,104,.34);
+  box-shadow:inset 0 0 58px -12px rgba(210,226,255,.26);
   overflow:hidden}
-.tarot .frame:before{content:"";position:absolute;inset:8px;border:1px solid rgba(206,220,255,.13)}
-.tarot .corner{position:absolute;width:13px;height:13px;border:1px solid rgba(201,168,106,.55)}
+.tarot .frame:before{content:"";position:absolute;inset:8px;border:1px solid rgba(206,220,255,.14)}
+.tarot .corner{position:absolute;width:13px;height:13px;border:1px solid rgba(236,242,255,.45)}
 .tarot .corner.tl{top:15px;left:15px;border-right:0;border-bottom:0}
 .tarot .corner.tr{top:15px;right:15px;border-left:0;border-bottom:0}
 .tarot .corner.bl{bottom:15px;left:15px;border-right:0;border-top:0}
 .tarot .corner.br{bottom:15px;right:15px;border-left:0;border-top:0}
-.tarot .tno{font-family:Georgia,serif;font-size:9px;letter-spacing:.44em;
-  color:rgba(201,168,106,.78);margin-top:6px}
-.tarot .tname{writing-mode:vertical-rl;font-size:clamp(26px,6.8vw,38px);letter-spacing:.2em;
-  line-height:1.15;color:#f1f4fc;margin:2px 0;
-  text-shadow:0 0 28px rgba(170,195,245,.5),0 0 60px rgba(120,150,220,.28)}
-.tarot .ten{font-family:Georgia,serif;font-size:8px;letter-spacing:.34em;
-  text-transform:uppercase;color:rgba(139,150,179,.9)}
-.tarot .star{font-size:13px;color:rgba(201,168,106,.72);margin-bottom:4px}
+.tarot .tno{position:absolute;top:20px;left:0;right:0;text-align:center;
+  font-family:Georgia,serif;font-size:9px;letter-spacing:.44em;color:rgba(214,226,246,.7)}
+.face{position:absolute;left:20px;right:20px;top:42px;bottom:20px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .6s ease, transform .6s ease}
+.face-title{opacity:1}
+.face-text{opacity:0;transform:scale(.94)}
+.tarot.open .face-title{opacity:0;transform:scale(1.06)}
+.tarot.open .face-text{opacity:1;transform:none}
+.tname{writing-mode:vertical-rl;font-size:clamp(26px,6.8vw,38px);letter-spacing:.12em;
+  line-height:1.2;color:#f1f4fc;margin:2px 0;
+  text-shadow:0 0 28px rgba(200,216,255,.55),0 0 60px rgba(150,175,235,.3)}
+.ten{font-family:Georgia,serif;font-size:8px;letter-spacing:.34em;
+  text-transform:uppercase;color:rgba(160,172,198,.9);margin-top:12px}
+.star{font-size:12px;color:rgba(230,240,255,.55);margin-top:12px}
+.fbody{font-size:12px;line-height:1.95;letter-spacing:.03em;color:#d5def2;
+  text-align:center;white-space:pre-wrap}
+.fbody.big{writing-mode:vertical-rl;font-size:clamp(24px,6.4vw,34px);letter-spacing:.12em;
+  line-height:1.25;color:#f1f4fc;white-space:normal;
+  text-shadow:0 0 28px rgba(200,216,255,.55)}
+.optwrap{margin-top:26px;text-align:center;opacity:0;transform:translateY(6px);
+  transition:opacity .7s ease .18s, transform .7s ease .18s;pointer-events:none}
+.optwrap.on{opacity:1;transform:none;pointer-events:auto}
+.opt{background:none;border:1px solid rgba(226,236,250,.28);color:#e2e9f7;
+  font-family:inherit;font-size:12px;letter-spacing:.3em;padding:12px 34px;
+  cursor:pointer;border-radius:1px;transition:.4s;min-height:44px}
+.opt:hover{border-color:rgba(255,255,255,.62);box-shadow:0 0 26px -6px rgba(220,235,255,.45)}
 .tarot.revealed{transform:rotateY(84deg) scale(.84);opacity:0}
 .under{font-size:12.5px;font-style:italic;letter-spacing:.08em;color:#b9c4dc;
   margin-top:24px;line-height:1.9;text-align:center}
@@ -245,13 +265,19 @@ body{position:relative}
         <div class="corner tl"></div><div class="corner tr"></div>
         <div class="corner bl"></div><div class="corner br"></div>
         <div class="tno" id="vCardNo">I</div>
-        <div class="tname" id="vName">&nbsp;</div>
-        <div class="ten" id="vAliasEn"></div>
-        <div class="star">✧</div>
+        <div class="face face-title">
+          <div class="tname" id="vName">&nbsp;</div>
+          <div class="ten" id="vAliasEn"></div>
+          <div class="star">✧</div>
+        </div>
+        <div class="face face-text">
+          <div class="fbody" id="vFaceBody"></div>
+        </div>
       </div>
     </div>
     <div class="under" id="vBrief"></div>
-    <div class="hint2">Tap to reveal</div>
+    <div class="optwrap" id="optWrap"><button class="opt" id="btnOpt" type="button">进 入</button></div>
+    <div class="hint2" id="vHint">Tap to reveal</div>
   </div>
   <div class="vert" id="vSub"></div>
 </section>
@@ -503,20 +529,45 @@ function fill(c){
   put($('vNote'), [f.scribble1, f.scribble2].filter(Boolean).join('　'));
   put($('vFoot'), f.footer1 || '');
 
+  /* 牌面：填了内容就排版显示，只填标题就竖排大字 */
+  var fb = $('vFaceBody');
+  var ftxt = (f.tarotText || '').trim();
+  if (fb){
+    if (ftxt){ fb.className = 'fbody'; fb.textContent = ftxt; }
+    else { fb.className = 'fbody big'; fb.textContent = f.name || ''; }
+  }
+  put($('btnOpt'), f.optText || '进 入');
+
   /* 背景音乐：自己有就用自己的，没有就用站点自带的那首 */
   var bg = $('bgm');
   if (bg){ bg.src = f.bgm || DEFAULT_BGM; BG = bg; }
 }
 
-/* 翻页：揭牌 */
-var tarot = $('tarotCard');
+/* 揭牌：第一次点翻面，牌下浮出选项；点选项进主界面 */
+var tarot = $('tarotCard'), opened = false;
+function enterMain(){
+  if (tarot) tarot.classList.add('revealed');
+  setTimeout(function(){ go('s2'); }, 600);
+}
 if (tarot){
   tarot.onclick = function(){
-    if (tarot._done) return;
-    tarot._done = true;
     if (BG){ try{ BG.play(); }catch(e){} }
-    tarot.classList.add('revealed');
-    setTimeout(function(){ go('s2'); }, 560);
+    if (!opened){
+      opened = true;
+      tarot.classList.add('open');
+      var h = $('vHint'); if (h) h.textContent = 'Tap again to enter';
+      var ow = $('optWrap'); if (ow) ow.classList.add('on');
+      return;
+    }
+    enterMain();
+  };
+}
+var bo = $('btnOpt');
+if (bo){
+  bo.onclick = function(e){
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (BG){ try{ BG.play(); }catch(e){} }
+    enterMain();
   };
 }
 $('btnBack').onclick = function(){
