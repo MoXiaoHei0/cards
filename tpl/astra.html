@@ -739,6 +739,7 @@ for (var i = 0; i < doors.length; i++){
   doors[i].onclick = function(){ go(this.getAttribute('data-go')); };
 }
 $('btnMore').onclick = function(){ go('s2'); };
+if ($('btnEnd')) $('btnEnd').onclick = function(){ go('s7'); };
 
 /* 左上角编辑：就地修改，不跳工厂 */
 var EFIELDS = [
