@@ -7,7 +7,7 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --tfront:none; --tback:none; --halo:none; --bell:none;
+  --tfront:none; --tback:none; --plotbg:none; --rose:none;
   --ink:#e9edf7; --dim:#8b96b3; --gold:#c9a86a; --line:rgba(206,220,255,.16);
   --panel:rgba(12,17,30,.55); --deep:#05070d;
 }
@@ -328,6 +328,34 @@ body{position:relative}
 @keyframes oracleIn{from{opacity:0;transform:translateY(16px);filter:blur(8px)}
   to{opacity:1;transform:translateY(0);filter:blur(0)}}
 
+
+/* 剧情页：太阳众手背景 */
+.plotbg{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.30;
+  background-image:var(--plotbg);background-position:center 7%;
+  background-size:min(88vw,470px) auto;background-repeat:no-repeat;filter:blur(.4px);
+  -webkit-mask-image:radial-gradient(ellipse 64% 46% at 50% 33%,
+    rgba(0,0,0,.95) 18%,rgba(0,0,0,.55) 52%,transparent 80%);
+  mask-image:radial-gradient(ellipse 64% 46% at 50% 33%,
+    rgba(0,0,0,.95) 18%,rgba(0,0,0,.55) 52%,transparent 80%)}
+
+/* 对话框 */
+.dlg{display:flex;flex-direction:column;gap:15px;margin-top:16px;position:relative;z-index:1}
+.dlg-row{display:flex}
+.dlg-row.r{justify-content:flex-end}
+.bub{max-width:80%;padding:13px 15px;border-radius:15px;font-size:12.5px;line-height:1.95;
+  letter-spacing:.04em;color:#e4ebfa;border:1px solid rgba(150,175,225,.16);
+  background:rgba(17,26,45,.66);opacity:0;animation:bubIn .85s both;
+  box-shadow:0 8px 26px rgba(0,0,0,.34)}
+.dlg-row.r .bub{background:rgba(38,32,22,.68);border-color:rgba(201,168,106,.26);color:#f0e8d2}
+@keyframes bubIn{from{opacity:0;transform:translateY(12px) scale(.985);filter:blur(6px)}
+  to{opacity:1;transform:none;filter:blur(0)}}
+
+/* 尾声玫瑰 */
+.rose{width:132px;height:141px;margin:16px auto 2px;opacity:.92;
+  background-image:var(--rose);background-position:center;
+  background-size:contain;background-repeat:no-repeat}
+@media (max-width:560px){.rose{width:104px;height:111px}}
+
 </style>
 </head>
 <body>
@@ -404,6 +432,7 @@ body{position:relative}
 
 <!-- 05 剧情 -->
 <section class="screen" id="s5">
+  <div class="plotbg"></div>
   <div class="wrap">
     <div class="chap"><span class="no">05</span><span class="cn">对话剧情</span><span class="en">Dialogue</span></div>
     <div class="rule"></div>
@@ -428,7 +457,8 @@ body{position:relative}
     <div class="rule"></div>
     <div class="links" id="vLinks"></div>
     <div class="mnote" id="vNote"></div>
-    <div class="rule dia" style="margin-top:34px"></div>
+    <div class="rose"></div>
+    <div class="rule dia" style="margin-top:26px"></div>
     <div style="text-align:center;font-size:10px;letter-spacing:.3em;color:var(--dim)" id="vFoot"></div>
   </div>
 </section>
@@ -463,6 +493,8 @@ var ABASE = (function(){
   var st = document.documentElement.style;
   st.setProperty('--tfront', "url('" + ABASE + "tarot-front.jpg')");
   st.setProperty('--tback', "url('" + ABASE + "tarot-back.jpg')");
+  st.setProperty('--plotbg', "url('" + ABASE + "deco-sun.jpg')");
+  st.setProperty('--rose', "url('" + ABASE + "deco-rose.png')");
 })();
 (function(){
   var box = document.getElementById('ff'); if (!box) return;
@@ -483,9 +515,9 @@ var ABASE = (function(){
 })();
 var DEFAULT_BGM = (function(){
   var p = location.pathname;
-  if (p.indexOf('/astra/p/') > -1) return '../../assets/bgm-sink.mp3';
-  if (p.indexOf('/tpl/') > -1) return '../assets/bgm-sink.mp3';
-  return 'assets/bgm-sink.mp3';
+  if (p.indexOf('/astra/p/') > -1) return '../../assets/bgm-xinggui.mp3';
+  if (p.indexOf('/tpl/') > -1) return '../assets/bgm-xinggui.mp3';
+  return 'assets/bgm-xinggui.mp3';
 })();
 
 function esc(s){ return (s == null ? '' : String(s)); }
@@ -505,6 +537,14 @@ function go(id){
   $('btnBack').style.display = (id === 's1') ? 'none' : '';
   $('barL').textContent = (i + 1 < 10 ? '0' : '') + (i + 1) + ' / 07';
   var sc = $(id); if (sc) sc.scrollTop = 0;
+  if (id === 's2'){
+    var els = document.querySelectorAll('#s2 .chap, #s2 .rule, #s2 .main-grid, #s2 .door');
+    [].forEach.call(els, function(el){
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+  }
   if (id === 's1') resetTarot();
 }
 
@@ -585,25 +625,22 @@ function fill(c){
     });
   }
 
-  /* 剧情：神谕式逐句浮现 */
+  /* 剧情：对话气泡，逐条浮现 */
   var plots = $('vPlots');
   if (plots){
     plots.innerHTML = '';
     var body = (f.about || '').trim();
     var paras = body ? body.split(/\n+/).filter(function(x){ return x.trim(); }) : [];
-    var box2 = document.createElement('div'); box2.className = 'oracle';
+    var box2 = document.createElement('div'); box2.className = 'dlg';
     paras.forEach(function(txt, i){
-      var st = document.createElement('div'); st.className = 'or-star';
-      st.textContent = '\u2726'; st.style.animationDelay = (0.16 + i * 0.42) + 's';
-      box2.appendChild(st);
-      var ln = document.createElement('div'); ln.className = 'or-line';
-      ln.textContent = txt.trim();
-      ln.style.animationDelay = (0.30 + i * 0.42) + 's';
-      box2.appendChild(ln);
+      var row = document.createElement('div');
+      row.className = 'dlg-row' + (i % 2 ? ' r' : '');
+      var b = document.createElement('div'); b.className = 'bub';
+      b.textContent = txt.trim();
+      b.style.animationDelay = (0.30 + i * 0.32) + 's';
+      row.appendChild(b);
+      box2.appendChild(row);
     });
-    var tail = document.createElement('div'); tail.className = 'or-star';
-    tail.textContent = '\u2726'; tail.style.animationDelay = (0.30 + paras.length * 0.42) + 's';
-    box2.appendChild(tail);
     plots.appendChild(box2);
   }
 
@@ -708,7 +745,7 @@ var EFIELDS = [
   ['introBrand','顶部英文小标'],['introSub','顶部中文副标'],
   ['tags','标签（逗号分隔）'],['style','关键词（逗号分隔）'],
   ['workday','平日时段'],['weekend','周末时段'],
-  ['about','关于我（可多行）'],['rules','规矩（每行一条）'],
+  ['about','对话剧情（每行一句）'],['rules','规矩（每行一条）'],
   ['q1','板评 I · 内容'],['q1c','板评 I · 小标（用 / 分隔）'],
   ['q2','话术 II · 内容'],['q2c','话术 II · 小标（用 / 分隔）'],
   ['links','链接（每行：名称|网址）'],
