@@ -1,4 +1,6 @@
-<!DOCTYPE html><html lang="zh"><head>
+<!DOCTYPE html>
+<html lang="zh">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>黑酱 · 星夜档案</title>
@@ -222,7 +224,7 @@ body{position:relative}
   box-shadow:0 0 5px rgba(170,225,255,.95),0 0 13px rgba(110,185,255,.6);
   animation:ffmove linear infinite, fffade ease-in-out infinite}
 @keyframes ffmove{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(var(--dx),var(--dy),0)}100%{transform:translate3d(0,0,0)}}
-@keyframes fffade{0%,100%{opacity:.1}50%{opacity:.88}}
+@keyframes fffade{0%,100%{opacity:.06}38%{opacity:.95}72%{opacity:.30}}
 @media (max-width:560px){.fireflies span{box-shadow:0 0 4px rgba(170,225,255,.85),0 0 9px rgba(110,185,255,.5)}}
 @media (max-width:560px){
   .wrap{padding:52px 20px 96px}
@@ -277,15 +279,64 @@ body{position:relative}
   font-size:11px;color:#8fb8e0;letter-spacing:.06em;z-index:10002;
   pointer-events:none;opacity:0;transition:opacity .3s}
 .ed-msg.on{opacity:1}
+
+/* 主界面：从上往下一排排浮现 */
+#s2 .chap{animation:riseIn .8s both}
+#s2 .rule{animation:riseIn .8s .10s both}
+#s2 .main-grid{animation:riseIn .9s .22s both}
+#s2 .door{animation:riseIn .85s both}
+#s2 .door:nth-child(1){animation-delay:.38s}
+#s2 .door:nth-child(2){animation-delay:.46s}
+#s2 .door:nth-child(3){animation-delay:.54s}
+#s2 .door:nth-child(4){animation-delay:.62s}
+@keyframes riseIn{from{opacity:0;transform:translateY(22px);filter:blur(7px)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}}
+
+/* 风格卡 */
+.stylegrid{display:flex;flex-wrap:wrap;gap:9px;margin-top:4px}
+.st-card{flex:1 1 44%;min-width:0;position:relative;padding:14px 12px 16px;
+  border:1px solid rgba(150,175,225,.16);border-radius:3px;overflow:hidden;
+  background:linear-gradient(155deg,rgba(255,255,255,.055),rgba(255,255,255,.008))}
+.st-no{font-size:9px;letter-spacing:.22em;color:#c9a86a;opacity:.85}
+.st-name{display:block;font-size:18px;letter-spacing:.16em;color:#eef2fb;margin-top:10px}
+.st-en{display:block;font-size:8.5px;letter-spacing:.26em;color:#78869f;margin-top:7px}
+.st-line{position:absolute;left:13px;right:13px;bottom:0;height:1px;
+  background:linear-gradient(90deg,rgba(201,168,106,.45),rgba(201,168,106,0))}
+
+/* 须知 */
+.nt-times{margin-bottom:20px}
+.nt-time{display:flex;justify-content:space-between;align-items:baseline;
+  padding:8px 0;border-bottom:1px dashed rgba(150,175,225,.12)}
+.nt-k{font-size:10px;letter-spacing:.16em;color:#8b98b2}
+.nt-v{font-size:12px;color:#d8e0f0}
+.nt{display:flex;gap:12px;align-items:flex-start;
+  border-left:1px solid rgba(201,168,106,.22);padding:12px 0 12px 14px;margin-left:2px}
+.nt-no{flex:0 0 auto;font-size:9.5px;letter-spacing:.16em;color:#c9a86a;padding-top:3px}
+.nt-t{font-size:12.5px;line-height:1.95;color:#dce4f4}
+
+/* 对话剧情：神谕 */
+.oracle{position:relative;text-align:center;padding:14px 0 6px}
+.oracle:before{content:'';position:absolute;left:50%;top:14%;
+  width:min(84vw,430px);height:min(84vw,430px);transform:translate(-50%,-14%);
+  border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(168,198,255,.15),rgba(120,160,230,.05) 46%,transparent 70%)}
+.or-line{font-family:Georgia,'Songti SC','STSong',serif;font-size:15px;line-height:2.55;
+  letter-spacing:.09em;color:#e9eefb;max-width:min(25em,100%);margin:0 auto;
+  text-shadow:0 0 24px rgba(168,198,255,.4);opacity:0;animation:oracleIn 1.6s both}
+.or-star{font-size:10px;color:rgba(201,168,106,.8);letter-spacing:.4em;margin:20px 0 10px;
+  opacity:0;animation:oracleIn 1.2s both}
+@keyframes oracleIn{from{opacity:0;transform:translateY(16px);filter:blur(8px)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}}
+
 </style>
 </head>
 <body>
-<script>window.__CARD__={"f":{"name":"黑酱","alias":"MoXiaoHei","brief":"在星夜里接住每一个走丢的人","introBrand":"A CERTAIN PERSON","introSub":"夜行档案 · 第 001 号","tags":["光遇陪玩、树洞、夜行"],"style":["温柔、慢热、守时、不失联"],"workday":"19:00 — 24:00","weekend":"全天，提前一天约","rules":["不接急单，至少提前一天、上线前会先报时、中途离开会说明"],"about":"第一次见你，是我在雨林里等一个不认路的人。\n后来才知道，那天你也在等我。\n这里不是店，是一间一直亮着灯的小屋。","q1":{"text":"","choices":[]},"q2":{"text":"","choices":[]},"links":[],"scribble1":"灯一直亮着","scribble2":"不用敲门","footer1":"2026 · 小黑","avatar":"","cover":"","footL":"黑酱 · 沉潜","bgmLabel":"黑酱 · 沉潜","updated":"2026.11.12","bgmKey":"","bgmName":""},"title":"黑酱 · 星夜档案"};</script>
+<script>window.__CARD__={"f":{"name":"黑酱","alias":"MoXiaoHei","brief":"在星夜里接住每一个走丢的人","introBrand":"A CERTAIN PERSON","introSub":"夜行档案 · 第 001 号","tags":["光遇陪玩","树洞","夜行"],"style":["温柔","慢热","守时","不失联"],"workday":"19:00 — 24:00","weekend":"全天，提前一天约","rules":["不接急单，至少提前一天","上线前会先报时","中途离开会说明"],"about":"第一次见你，是我在雨林里等一个不认路的人。\n后来才知道，那天你也在等我。\n这里不是店，是一间一直亮着灯的小屋。","q1":{"text":"","choices":[]},"q2":{"text":"","choices":[]},"links":[],"scribble1":"灯一直亮着","scribble2":"不用敲门","footer1":"2026 · 小黑","avatar":"","cover":"","footL":"黑酱 · 沉潜","bgmLabel":"黑酱 · 沉潜","updated":"2026.11.12","bgmKey":"","bgmName":""},"title":"黑酱 · 星夜档案"};</script>
 <!--__CARD_JSON__-->
 
 <div id="stars"></div>
 <div class="fireflies" id="ff"></div>
-<audio id="bgm" loop="" preload="auto"></audio>
+<audio id="bgm" loop preload="auto"></audio>
 <button class="editbtn" id="btnEdit" title="编辑这张卡">✎</button>
 
 <!-- 01 开场：塔罗揭牌 -->
@@ -315,7 +366,7 @@ body{position:relative}
     <div class="chap"><span class="no">02</span><span class="cn">主界面</span><span class="en">Main</span></div>
     <div class="rule"></div>
     <div class="main-grid">
-      <div class="portrait"><img id="vAvatar" alt=""><div class="ph" id="vPh">✧</div><div class="ring"></div><div class="ring2"></div></div>
+      <div class="portrait"><img id="vAvatar" alt="" /><div class="ph" id="vPh">✧</div><div class="ring"></div><div class="ring2"></div></div>
       <div class="main-txt">
         <div class="main-name" id="vName2"></div>
         <div class="main-alias" id="vAlias"></div>
@@ -323,10 +374,10 @@ body{position:relative}
       </div>
     </div>
     <div class="doors">
-      <div class="door" data-go="s3"><span class="sym">◈</span><span class="cn">属性</span><span class="en">Attribute</span></div>
-      <div class="door" data-go="s4"><span class="sym">✦</span><span class="cn">任务</span><span class="en">Task</span></div>
-      <div class="door" data-go="s5"><span class="sym">❖</span><span class="cn">剧情</span><span class="en">Plot</span></div>
-      <div class="door" data-go="s6"><span class="sym">✧</span><span class="cn">寻灵</span><span class="en">Summon</span></div>
+      <div class="door" data-go="s3"><span class="sym">◈</span><span class="cn">风格</span><span class="en">Style</span></div>
+      <div class="door" data-go="s4"><span class="sym">✦</span><span class="cn">须知</span><span class="en">Notice</span></div>
+      <div class="door" data-go="s5"><span class="sym">❖</span><span class="cn">对话剧情</span><span class="en">Dialogue</span></div>
+      <div class="door" data-go="s6"><span class="sym">✧</span><span class="cn">板评·话术</span><span class="en">Reviews</span></div>
     </div>
   </div>
 </section>
@@ -334,9 +385,9 @@ body{position:relative}
 <!-- 03 属性 -->
 <section class="screen" id="s3">
   <div class="wrap">
-    <div class="chap"><span class="no">03</span><span class="cn">属性</span><span class="en">Attribute</span></div>
+    <div class="chap"><span class="no">03</span><span class="cn">风格</span><span class="en">Style</span></div>
     <div class="rule"></div>
-    <div id="vAttrs"></div>
+    <div class="stylegrid" id="vAttrs"></div>
     <div class="rule dia" style="margin-top:26px"></div>
     <div class="touts" id="vTouts2"></div>
   </div>
@@ -345,17 +396,17 @@ body{position:relative}
 <!-- 04 任务 -->
 <section class="screen" id="s4">
   <div class="wrap">
-    <div class="chap"><span class="no">04</span><span class="cn">任务</span><span class="en">Task</span></div>
+    <div class="chap"><span class="no">04</span><span class="cn">须知</span><span class="en">Notice</span></div>
     <div class="rule"></div>
+    <div id="vTimes"></div>
     <div id="vTasks"></div>
-    <div style="margin-top:26px" id="vTicks"></div>
   </div>
 </section>
 
 <!-- 05 剧情 -->
 <section class="screen" id="s5">
   <div class="wrap">
-    <div class="chap"><span class="no">05</span><span class="cn">剧情</span><span class="en">Plot</span></div>
+    <div class="chap"><span class="no">05</span><span class="cn">对话剧情</span><span class="en">Dialogue</span></div>
     <div class="rule"></div>
     <div id="vPlots"></div>
     <button class="enter" id="btnMore" style="margin-top:30px"><span>继 续</span></button>
@@ -365,7 +416,7 @@ body{position:relative}
 <!-- 06 寻灵 -->
 <section class="screen" id="s6">
   <div class="wrap">
-    <div class="chap"><span class="no">06</span><span class="cn">寻灵</span><span class="en">Summon</span></div>
+    <div class="chap"><span class="no">06</span><span class="cn">板评·话术</span><span class="en">Reviews</span></div>
     <div class="rule"></div>
     <div class="cards2" id="vSum"></div>
   </div>
@@ -416,18 +467,18 @@ var ABASE = (function(){
 })();
 (function(){
   var box = document.getElementById('ff'); if (!box) return;
-  var n = (document.body.clientWidth < 560) ? 22 : 30;
+  var n = (document.body.clientWidth < 560) ? 34 : 46;
   for (var i = 0; i < n; i++){
     var s = document.createElement('span');
-    var d = Math.random() * 2.4 + 1.5;
+    var d = Math.random() * 2.7 + 1.5;
     s.style.left = (Math.random() * 97).toFixed(1) + '%';
     s.style.top = (Math.random() * 95).toFixed(1) + '%';
     s.style.width = d.toFixed(1) + 'px';
     s.style.height = d.toFixed(1) + 'px';
-    s.style.setProperty('--dx', (Math.random() * 40 - 20).toFixed(0) + 'px');
-    s.style.setProperty('--dy', (Math.random() * 70 - 35).toFixed(0) + 'px');
-    s.style.animationDuration = (Math.random() * 14 + 15).toFixed(1) + 's, ' + (Math.random() * 4 + 3).toFixed(1) + 's';
-    s.style.animationDelay = '-' + (Math.random() * 20).toFixed(1) + 's, -' + (Math.random() * 4).toFixed(1) + 's';
+    s.style.setProperty('--dx', (Math.random() * 64 - 32).toFixed(0) + 'px');
+    s.style.setProperty('--dy', (Math.random() * 104 - 52).toFixed(0) + 'px');
+    s.style.animationDuration = (Math.random() * 8 + 6).toFixed(1) + 's, ' + (Math.random() * 2.2 + 1.6).toFixed(1) + 's';
+    s.style.animationDelay = '-' + (Math.random() * 12).toFixed(1) + 's, -' + (Math.random() * 3).toFixed(1) + 's';
     box.appendChild(s);
   }
 })();
@@ -491,76 +542,70 @@ function fill(c){
     tags.forEach(function(t){ if (t) box.appendChild(div('tout', t)); });
   });
 
-  /* 属性条 */
+  /* 风格 */
   var attrs = $('vAttrs'); if (attrs){
     attrs.innerHTML = '';
     var list = (f.style && f.style.length) ? f.style : tags;
     list.forEach(function(name, i){
       if (!name) return;
-      var row = document.createElement('div'); row.className = 'attr-row';
-      var k = div('attr-k', name);
-      var bar = document.createElement('div'); bar.className = 'attr-bar';
-      var it = document.createElement('i');
-      var w = 92 - i * 11; if (w < 34) w = 34;
-      it.style.width = w + '%';
-      bar.appendChild(it);
-      var v = div('attr-v', String(90 - i * 6));
-      row.appendChild(k); row.appendChild(bar); row.appendChild(v);
-      attrs.appendChild(row);
+      var c = document.createElement('div'); c.className = 'st-card';
+      var no = div('st-no', '0' + (i + 1));
+      var nm = div('st-name', name);
+      var ln = document.createElement('div'); ln.className = 'st-line';
+      c.appendChild(no); c.appendChild(nm); c.appendChild(ln);
+      attrs.appendChild(c);
     });
   }
 
-  /* 任务：时间 + 须知 */
+  /* 须知：营业时间 */
+  var times = $('vTimes');
+  if (times){
+    times.innerHTML = '';
+    var tt = [];
+    if (f.workday) tt.push(['工作日 · 周中', f.workday]);
+    if (f.weekend) tt.push(['休息日 · 周末', f.weekend]);
+    tt.forEach(function(x){
+      var row = document.createElement('div'); row.className = 'nt-time';
+      row.appendChild(div('nt-k', x[0])); row.appendChild(div('nt-v', x[1]));
+      times.appendChild(row);
+    });
+  }
+  /* 须知：条款 */
   var tasks = $('vTasks');
   if (tasks){
     tasks.innerHTML = '';
-    var tt = [];
-    if (f.workday) tt.push({t:'工作日 · 周中', d:f.workday});
-    if (f.weekend) tt.push({t:'休息日 · 周末', d:f.weekend});
-    tt.forEach(function(x, i){
-      var box = document.createElement('div'); box.className = 'task';
-      var no = div('t-no', '0' + (i + 1));
-      var txt = document.createElement('div');
-      var a = div('t-tt', x.t); var b = div('t-ds', x.d);
-      txt.appendChild(a); txt.appendChild(b);
-      box.appendChild(no); box.appendChild(txt);
-      tasks.appendChild(box);
-    });
-  }
-  var ticks = $('vTicks');
-  if (ticks){
-    ticks.innerHTML = '';
-    var rules = f.rules || [];
-    if (rules.length){
-      var h = document.createElement('div');
-      h.className = 'kicker'; h.style.textAlign = 'left';
-      h.style.marginBottom = '14px'; h.textContent = 'RULES';
-      ticks.appendChild(h);
-    }
-    rules.forEach(function(r){
+    (f.rules || []).forEach(function(r, i){
       if (!r) return;
-      var row = document.createElement('div'); row.className = 'tick';
-      var b = document.createElement('b');
-      row.appendChild(b);
-      row.appendChild(div('', r));
-      ticks.appendChild(row);
+      var row = document.createElement('div'); row.className = 'nt';
+      var no = document.createElement('span'); no.className = 'nt-no';
+      no.textContent = ('0' + (i + 1)).slice(-2);
+      var tx = document.createElement('span'); tx.className = 'nt-t';
+      tx.textContent = r;
+      row.appendChild(no); row.appendChild(tx);
+      tasks.appendChild(row);
     });
   }
 
-  /* 剧情：正文按段落拆 */
+  /* 剧情：神谕式逐句浮现 */
   var plots = $('vPlots');
   if (plots){
     plots.innerHTML = '';
     var body = (f.about || '').trim();
-    var paras = body ? body.split(/\n+/).filter(function(s){ return s.trim(); }) : [];
-    paras.forEach(function(p, i){
-      var box = div('plot');
-      var no = document.createElement('span'); no.className = 'pno';
-      no.textContent = 'CHAPTER ' + ('0' + (i + 1)).slice(-2);
-      box.appendChild(no);
-      box.appendChild(document.createTextNode(p.trim()));
-      plots.appendChild(box);
+    var paras = body ? body.split(/\n+/).filter(function(x){ return x.trim(); }) : [];
+    var box2 = document.createElement('div'); box2.className = 'oracle';
+    paras.forEach(function(txt, i){
+      var st = document.createElement('div'); st.className = 'or-star';
+      st.textContent = '\u2726'; st.style.animationDelay = (0.16 + i * 0.42) + 's';
+      box2.appendChild(st);
+      var ln = document.createElement('div'); ln.className = 'or-line';
+      ln.textContent = txt.trim();
+      ln.style.animationDelay = (0.30 + i * 0.42) + 's';
+      box2.appendChild(ln);
     });
+    var tail = document.createElement('div'); tail.className = 'or-star';
+    tail.textContent = '\u2726'; tail.style.animationDelay = (0.30 + paras.length * 0.42) + 's';
+    box2.appendChild(tail);
+    plots.appendChild(box2);
   }
 
   /* 寻灵：两道问答 */
@@ -665,8 +710,8 @@ var EFIELDS = [
   ['tags','标签（逗号分隔）'],['style','关键词（逗号分隔）'],
   ['workday','平日时段'],['weekend','周末时段'],
   ['about','关于我（可多行）'],['rules','规矩（每行一条）'],
-  ['q1','寻灵 I · 牌面文字'],['q1c','寻灵 I · 选项（用 / 分隔）'],
-  ['q2','寻灵 II · 牌面文字'],['q2c','寻灵 II · 选项（用 / 分隔）'],
+  ['q1','板评 I · 内容'],['q1c','板评 I · 小标（用 / 分隔）'],
+  ['q2','话术 II · 内容'],['q2c','话术 II · 小标（用 / 分隔）'],
   ['links','链接（每行：名称|网址）'],
   ['scribble1','页内手写句一'],['scribble2','页内手写句二'],
   ['footer1','页脚署名'],['footL','左下署名'],['bgmLabel','音乐名'],
@@ -840,4 +885,6 @@ if (DRAFT){
 fill({ f:{ name:'未命名' } });
 go('s1');
 })();
-</script></body></html>
+</script>
+</body>
+</html>
