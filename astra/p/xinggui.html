@@ -448,6 +448,7 @@ body{position:relative}
     <div class="chap"><span class="no">06</span><span class="cn">板评·话术</span><span class="en">Reviews</span></div>
     <div class="rule"></div>
     <div class="cards2" id="vSum"></div>
+    <button class="enter" id="btnEnd" style="margin-top:36px"><span>继 续</span></button>
   </div>
 </section>
 
@@ -739,6 +740,7 @@ for (var i = 0; i < doors.length; i++){
   doors[i].onclick = function(){ go(this.getAttribute('data-go')); };
 }
 $('btnMore').onclick = function(){ go('s2'); };
+if ($('btnEnd')) $('btnEnd').onclick = function(){ go('s7'); };
 
 /* 左上角编辑：就地修改，不跳工厂 */
 var EFIELDS = [
