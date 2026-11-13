@@ -421,10 +421,38 @@ body{position:relative}
   position:relative;z-index:1;min-height:0}
 .brbox .bub{max-width:90%;margin:0 auto;text-align:center}
 
+
+/* 剧情：逐句推进 */
+.optbtn.dim{opacity:.28;pointer-events:none}
+.dlg-row,.bub{animation-fill-mode:both}
+
+/* 角落星星 & 彩蛋 */
+.egstar{position:fixed;right:14px;bottom:84px;z-index:6;width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  color:#c9a86a;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  text-shadow:0 0 16px rgba(201,168,106,.6),0 0 34px rgba(201,168,106,.3);
+  animation:starBreathe 3.6s ease-in-out infinite}
+@keyframes starBreathe{0%,100%{opacity:.42;transform:scale(.93) rotate(0deg)}
+  50%{opacity:1;transform:scale(1.08) rotate(9deg)}}
+.egg{position:fixed;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;
+  padding:24px;background:rgba(3,6,13,.88);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);
+  opacity:0;visibility:hidden;transition:opacity .52s ease,visibility .52s}
+.egg.on{opacity:1;visibility:visible}
+.egg-in{max-width:430px;width:100%;max-height:76vh;overflow-y:auto;box-sizing:border-box;
+  border:1px solid rgba(201,168,106,.24);border-radius:3px;
+  background:linear-gradient(165deg,rgba(20,29,48,.97),rgba(9,13,23,.98));
+  padding:26px 22px 22px;box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.egg-t{font-size:11px;letter-spacing:.3em;color:#c9a86a;text-align:center;margin-bottom:16px}
+.egg-body{font-size:12.5px;line-height:2.15;letter-spacing:.035em;color:#dfe7f6;
+  white-space:pre-wrap}
+.egg-x{margin:24px auto 0;display:block;padding:11px 28px;background:none;cursor:pointer;
+  border:1px solid rgba(201,168,106,.3);color:#cfd7e6;font-size:11px;letter-spacing:.22em;
+  border-radius:2px}
+
 </style>
 </head>
 <body>
-<script>window.__CARD__={"f":{"name":"黑酱","alias":"MoXiaoHei","brief":"在星夜里接住每一个走丢的人","introBrand":"A CERTAIN PERSON","introSub":"夜行档案 · 第 001 号","tags":["光遇陪玩","树洞","夜行"],"style":["温柔","慢热","守时","不失联"],"workday":"19:00 — 24:00","weekend":"全天，提前一天约","rules":["不接急单，至少提前一天","上线前会先报时","中途离开会说明"],"about":"第一次见你，是我在雨林里等一个不认路的人。\n后来才知道，那天你也在等我。\n这里不是店，是一间一直亮着灯的小屋。","q1":{"text":"","choices":[]},"q2":{"text":"","choices":[]},"links":[],"scribble1":"灯一直亮着","scribble2":"不用敲门","footer1":"2026 · 小黑","avatar":"","cover":"","footL":"黑酱 · 沉潜","bgmLabel":"黑酱 · 沉潜","updated":"2026.11.12","bgmKey":"","bgmName":"","faceBig":"救赎","optA":"跟着你走","brA":"那就别回头。\n路很长，我会一直数着你的脚步。","optB":"先问一句","brB":"问吧。\n趁着灯还亮着，我不说谎。","optC":"只是路过","brC":"路过也算数。\n门开着，你想回来就回来。"},"title":"黑酱 · 星夜档案"};</script>
+<script>window.__CARD__={"f":{"name":"黑酱","alias":"MoXiaoHei","brief":"在星夜里接住每一个走丢的人","introBrand":"A CERTAIN PERSON","introSub":"夜行档案 · 第 001 号","tags":["光遇陪玩","树洞","夜行"],"style":["温柔","慢热","守时","不失联"],"workday":"19:00 — 24:00","weekend":"全天，提前一天约","rules":["不接急单，至少提前一天","上线前会先报时","中途离开会说明"],"about":"第一次见你，是我在雨林里等一个不认路的人。\n后来才知道，那天你也在等我。\n这里不是店，是一间一直亮着灯的小屋。","q1":{"text":"","choices":[]},"q2":{"text":"","choices":[]},"links":[],"scribble1":"灯一直亮着","scribble2":"不用敲门","footer1":"2026 · 小黑","avatar":"","cover":"","footL":"黑酱 · 沉潜","bgmLabel":"黑酱 · 沉潜","updated":"2026.11.12","bgmKey":"","bgmName":"","faceBig":"救赎","optA":"跟着你走","brA":"那就别回头。\n路很长，我会一直数着你的脚步。","optB":"先问一句","brB":"问吧。\n趁着灯还亮着，我不说谎。","optC":"只是路过","brC":"路过也算数。\n门开着，你想回来就回来。","script":"第一次见你，是我在雨林里等一个不认路的人。\n跟着你走|那就别回头，路很长。\n先问一句|问吧，趁着灯还亮着。\n只是路过|路过也算数，门不会关。\n后来才知道，那天你也在等我。\n跟着你走|我在数你的脚步，一步都没落下。\n先问一句|等一个人不需要理由，只需要灯。\n只是路过|你走慢一点，我就当你留下来过。\n这里不是店，是一间一直亮着灯的小屋。\n跟着你走|那就把鞋脱了，把今晚剩下的时间留下。\n先问一句|问到最后你会发现，这里没有门槛。\n只是路过|门开着，你想回来就回来。","eggText":"写给还没来的那个人：\n\n我第一次点灯的时候，以为这只是个习惯。后来才发现，是怕有人摸黑走上来，怕他在门口站太久，又不敢敲门。\n\n夜里来的人都不太说话。他们把名字放在门口，把故事留一半在口袋里。我不问，只把灯往前挪一点。\n\n如果你也在这条路上——不用急着证明自己值得被接住。你走到这里，就已经是了。\n\n灯一直亮着。不用敲门。"},"title":"黑酱 · 星夜档案"};</script>
 <!--__CARD_JSON__-->
 
 <div id="stars"></div>
@@ -545,6 +573,15 @@ body{position:relative}
 </div>
 
 <div class="bar"><span id="barL"></span><button id="btnBack" style="display:none">返 回</button></div>
+
+<div class="egstar" id="egStar">✦</div>
+<div class="egg" id="eggBox">
+  <div class="egg-in">
+    <div class="egg-t">一 封 没 寄 出 的 信</div>
+    <div class="egg-body" id="eggBody"></div>
+    <button class="egg-x" id="eggClose">关 闭</button>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -751,42 +788,72 @@ function fill(c){
 
   /* 剧情：对话气泡，逐条浮现 */
   var plots = $('vPlots');
-  if (plots){
+  if (plots && $('vOpts')){
     plots.innerHTML = '';
-    var body = (f.about || '').trim();
-    var paras = body ? body.split(/\n+/).filter(function(x){ return x.trim(); }) : [];
-    var box2 = document.createElement('div'); box2.className = 'dlg';
-    paras.forEach(function(txt, i){
+    var optsB = $('vOpts'); optsB.innerHTML = '';
+    var rounds = parseScript(f);
+    var ri = 0;
+
+    var addBub = function(txt, side){
       var row = document.createElement('div');
-      row.className = 'dlg-row' + (i % 2 ? ' r' : '');
+      row.className = 'dlg-row' + (side === 'r' ? ' r' : '');
       var b = document.createElement('div'); b.className = 'bub';
-      b.textContent = txt.trim();
-      b.style.animationDelay = (0.30 + i * 0.32) + 's';
+      b.textContent = txt;
       row.appendChild(b);
-      box2.appendChild(row);
-    });
-    plots.appendChild(box2);
+      plots.appendChild(row);
+      var sc = $('s5');
+      if (sc) setTimeout(function(){ sc.scrollTop = sc.scrollHeight; }, 260);
+    };
+
+    var showRound = function(i){
+      if (i >= rounds.length) return;
+      var r = rounds[i];
+      addBub(r.line, 'l');
+      optsB.innerHTML = '';
+      setTimeout(function(){
+        r.options.forEach(function(o){
+          var b = document.createElement('div');
+          b.className = 'optbtn';
+          b.textContent = o.label;
+          b.onclick = function(){
+            if (b.classList.contains('dim')) return;
+            [].forEach.call(optsB.children, function(x){ x.classList.add('dim'); });
+            b.classList.remove('dim'); b.classList.add('on');
+            if (o.reply) addBub(o.reply, 'r');
+            setTimeout(function(){ optsB.innerHTML = ''; showRound(i + 1); }, 1000);
+          };
+          optsB.appendChild(b);
+        });
+      }, 620);
+    };
+    showRound(0);
   }
 
-  /* 剧情：三个可点的分支 */
-  var opts = $('vOpts');
-  if (opts){
-    opts.innerHTML = '';
-    var OPTS = [
-      ['optA', '我跟着你走', 'brA'],
-      ['optB', '我先问一句', 'brB'],
-      ['optC', '我只是路过', 'brC']
+  function parseScript(c){
+    var raw = (c.script || '').trim();
+    var out = [];
+    var push = function(line){ out.push({line: line, options: []}); };
+    if (raw){
+      raw.split(/\n+/).forEach(function(ln){
+        ln = ln.trim(); if (!ln) return;
+        if (ln.indexOf('|') > -1 && out.length){
+          var a = ln.split('|');
+          out[out.length - 1].options.push({label: (a[0]||'').trim(), reply: (a[1]||'').trim()});
+        } else { push(ln); }
+      });
+      if (out.length) return out;
+    }
+    var O = [
+      [(c.optA || '').trim() || '我跟着你走', (c.brA || '').trim()],
+      [(c.optB || '').trim() || '我先问一句', (c.brB || '').trim()],
+      [(c.optC || '').trim() || '我只是路过', (c.brC || '').trim()]
     ];
-    OPTS.forEach(function(it){
-      var t = (f[it[0]] || '').trim() || it[1];
-      var b = document.createElement('div');
-      b.className = 'optbtn';
-      b.setAttribute('data-br', it[2]);
-      b.textContent = t;
-      b.onclick = function(){ pickBranch(this); };
-      opts.appendChild(b);
+    var body = ((c.about || '')).trim();
+    var paras = body ? body.split(/\n+/).filter(function(x){ return x.trim(); }) : [];
+    paras.forEach(function(t){
+      out.push({line: t.trim(), options: O.map(function(x){ return {label: x[0], reply: x[1]}; })});
     });
-    var vb = $('vBranch'); if (vb) vb.innerHTML = '';
+    return out;
   }
 
   /* 寻灵：两道问答 */
@@ -897,7 +964,10 @@ var EFIELDS = [
   ['introBrand','顶部英文小标'],['introSub','顶部中文副标'],
   ['tags','标签（逗号分隔）'],['style','关键词（逗号分隔）'],
   ['workday','平日时段'],['weekend','周末时段'],
-  ['faceBig','牌面竖排大字'],['about','对话剧情（每行一句）'],
+  ['faceBig','牌面竖排大字'],
+  ['script','剧情脚本（一句一行；下面接三行「选项|回应」）'],
+  ['eggText','星星彩蛋小作文'],
+  ['about','对话剧情（旧版备用，每行一句）'],
   ['optA','选项一'],['brA','选项一 · 回应（每行一句）'],
   ['optB','选项二'],['brB','选项二 · 回应（每行一句）'],
   ['optC','选项三'],['brC','选项三 · 回应（每行一句）'],
@@ -909,7 +979,7 @@ var EFIELDS = [
   ['footer1','页脚署名'],['footL','左下署名'],['bgmLabel','音乐名'],
   ['avatar','头像图片网址'],['cover','封面图片网址']
 ];
-var EDAREA = {about:1, rules:1, links:1, brA:1, brB:1, brC:1};
+var EDAREA = {about:1, rules:1, links:1, brA:1, brB:1, brC:1, script:1, eggText:1};
 
 function edGet(k, f){
   if (k === 'q1' || k === 'q2') return (f[k] && f[k].text) || '';
@@ -927,6 +997,22 @@ function edMsg(t){
   clearTimeout(edMsg._t);
   edMsg._t = setTimeout(function(){ m.classList.remove('on'); }, 2600);
 }
+
+var EGG_DEFAULT = '写给还没来的那个人：\n\n我第一次点灯的时候，以为这只是个习惯。' +
+'后来才发现，是怕有人摸黑走上来，怕他在门口站太久，又不敢敲门。\n\n' +
+'夜里来的人都不太说话。他们把名字放在门口，把故事留一半在口袋里。' +
+'我不问，只把灯往前挪一点。\n\n' +
+'如果你也在这条路上——不用急着证明自己值得被接住。你走到这里，就已经是了。\n\n' +
+'灯一直亮着。不用敲门。';
+if ($('egStar')){
+  $('egStar').onclick = function(){
+    var f = (CARD && CARD.f) || {};
+    $('eggBody').textContent = (f.eggText || '').trim() || EGG_DEFAULT;
+    $('eggBox').classList.add('on');
+  };
+}
+if ($('eggClose')) $('eggClose').onclick = function(){ $('eggBox').classList.remove('on'); };
+if ($('eggBox')) $('eggBox').onclick = function(e){ if (e.target === this) this.classList.remove('on'); };
 
 function edOpen(){
   var f = (CARD && CARD.f) || {};
