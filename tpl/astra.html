@@ -449,6 +449,12 @@ body{position:relative}
   border:1px solid rgba(201,168,106,.3);color:#cfd7e6;font-size:11px;letter-spacing:.22em;
   border-radius:2px}
 
+
+/* 剧情：每轮独立成组，旧的淡下去，不堆挤 */
+.dround{display:flex;flex-direction:column;gap:19px;margin-bottom:22px;
+  transition:opacity .85s ease,filter .85s ease,transform .85s ease}
+.dround.past{opacity:.4;transform:scale(.97);margin-bottom:10px}
+
 </style>
 </head>
 <body>
@@ -793,20 +799,25 @@ function fill(c){
     var rounds = parseScript(f);
     var ri = 0;
 
+    var roundBox = null;
     var addBub = function(txt, side){
       var row = document.createElement('div');
       row.className = 'dlg-row' + (side === 'r' ? ' r' : '');
       var b = document.createElement('div'); b.className = 'bub';
       b.textContent = txt;
       row.appendChild(b);
-      plots.appendChild(row);
+      (roundBox || plots).appendChild(row);
       var sc = $('s5');
       if (sc) setTimeout(function(){ sc.scrollTop = sc.scrollHeight; }, 260);
     };
 
     var showRound = function(i){
-      if (i >= rounds.length) return;
+      if (i >= rounds.length){ if (roundBox) roundBox.classList.add('past'); return; }
       var r = rounds[i];
+      if (roundBox) roundBox.classList.add('past');
+      roundBox = document.createElement('div');
+      roundBox.className = 'dround';
+      plots.appendChild(roundBox);
       addBub(r.line, 'l');
       optsB.innerHTML = '';
       setTimeout(function(){
