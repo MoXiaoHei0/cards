@@ -604,6 +604,18 @@ var ABASE = (function(){
   return 'assets/';
 })();
 (function(){
+  /* 预载牌面正反两图：进页面就开始取，翻到背面时不会先糊后清 */
+  try{
+    var i1 = new Image(), i2 = new Image();
+    i1.src = ABASE + 'tarot-front.jpg';
+    i2.src = ABASE + 'tarot-back.jpg';
+    window.__TFRONT = i1; window.__TBACK = i2;
+    if (document.body){
+      document.body.style.setProperty('--tfront', "url('" + ABASE + "tarot-front.jpg')");
+    }
+  }catch(e){}
+})();
+(function(){
   var st = document.documentElement.style;
   st.setProperty('--tfront', "url('" + ABASE + "tarot-front.jpg')");
   st.setProperty('--tback', "url('" + ABASE + "tarot-back.jpg')");
