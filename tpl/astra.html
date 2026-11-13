@@ -356,6 +356,46 @@ body{position:relative}
   background-size:contain;background-repeat:no-repeat}
 @media (max-width:560px){.rose{width:104px;height:111px}}
 
+
+/* 风格：进度条 */
+.attr-list{margin-top:6px;position:relative;z-index:1}
+.attr-row{display:flex;align-items:center;gap:12px;padding:13px 0;
+  border-bottom:1px dashed rgba(150,175,225,.12);animation:riseIn .9s both}
+.attr-no{flex:0 0 20px;font-size:9px;letter-spacing:.14em;color:#c9a86a}
+.attr-name{flex:0 0 auto;min-width:72px;font-size:13.5px;letter-spacing:.14em;color:#eef2fb}
+.attr-bar{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.06);
+  position:relative;overflow:hidden;min-width:60px}
+.attr-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:3px;
+  background:linear-gradient(90deg,rgba(143,169,216,.8),rgba(201,168,106,.96));
+  box-shadow:0 0 12px rgba(201,168,106,.35);
+  transition:width 1.1s cubic-bezier(.22,.62,.25,1)}
+.attr-val{flex:0 0 30px;text-align:right;font-size:9.5px;letter-spacing:.1em;color:#8b98b2}
+
+/* 每页底部的一句话方框 */
+.nextbox{display:flex;align-items:center;justify-content:center;gap:10px;
+  margin:36px auto 8px;padding:16px 18px;max-width:420px;width:100%;
+  border:1px solid rgba(201,168,106,.22);border-radius:2px;
+  background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.006));
+  font-size:11.5px;letter-spacing:.24em;color:#cfd7e6;cursor:pointer;
+  box-sizing:border-box;transition:border-color .4s,box-shadow .4s,color .4s}
+.nextbox i{flex:0 0 auto;width:5px;height:5px;border-radius:50%;background:#c9a86a;
+  box-shadow:0 0 10px rgba(201,168,106,.7);animation:dotPulse 2.2s ease-in-out infinite}
+@keyframes dotPulse{0%,100%{opacity:.45}50%{opacity:1}}
+.nextbox:active{border-color:rgba(201,168,106,.62);color:#fff;
+  box-shadow:0 0 20px rgba(201,168,106,.12)}
+@media (hover:hover){.nextbox:hover{border-color:rgba(201,168,106,.5);color:#fff}}
+
+/* 主界面引导：光圈 */
+.door.hint:after{content:'';position:absolute;inset:-5px;border-radius:3px;
+  pointer-events:none;border:1px solid rgba(201,168,106,.5);
+  box-shadow:0 0 16px rgba(201,168,106,.14),inset 0 0 16px rgba(201,168,106,.10);
+  animation:haloPulse 1.9s ease-in-out infinite}
+@keyframes haloPulse{0%,100%{opacity:.3;transform:scale(.99)}50%{opacity:1;transform:scale(1.015)}}
+.hintline{margin-top:20px;text-align:center;font-size:10px;letter-spacing:.34em;
+  color:#c9a86a;opacity:0;transition:opacity .9s ease}
+.hintline.on{opacity:1;animation:hintFade 2.6s ease-in-out infinite}
+@keyframes hintFade{0%,100%{opacity:.45}50%{opacity:1}}
+
 </style>
 </head>
 <body>
@@ -406,6 +446,7 @@ body{position:relative}
       <div class="door" data-go="s5"><span class="sym">❖</span><span class="cn">对话剧情</span><span class="en">Dialogue</span></div>
       <div class="door" data-go="s6"><span class="sym">✧</span><span class="cn">板评·话术</span><span class="en">Reviews</span></div>
     </div>
+    <div class="hintline" id="hintLine">轻点 · 风格 · 从这里开始</div>
   </div>
 </section>
 
@@ -414,9 +455,9 @@ body{position:relative}
   <div class="wrap">
     <div class="chap"><span class="no">03</span><span class="cn">风格</span><span class="en">Style</span></div>
     <div class="rule"></div>
-    <div class="stylegrid" id="vAttrs"></div>
-    <div class="rule dia" style="margin-top:26px"></div>
-    <div class="touts" id="vTouts2"></div>
+    <div class="attr-list" id="vAttrs"></div>
+    <div class="rule dia" style="margin-top:30px"></div>
+    <div class="nextbox" data-next="s4"><i></i><span>记住了 · 去看须知</span></div>
   </div>
 </section>
 
@@ -427,6 +468,7 @@ body{position:relative}
     <div class="rule"></div>
     <div id="vTimes"></div>
     <div id="vTasks"></div>
+    <div class="nextbox" data-next="s5"><i></i><span>知道了 · 去看对话剧情</span></div>
   </div>
 </section>
 
@@ -437,7 +479,7 @@ body{position:relative}
     <div class="chap"><span class="no">05</span><span class="cn">对话剧情</span><span class="en">Dialogue</span></div>
     <div class="rule"></div>
     <div id="vPlots"></div>
-    <button class="enter" id="btnMore" style="margin-top:30px"><span>继 续</span></button>
+    <div class="nextbox" data-next="s6"><i></i><span>继续 · 板评与话术</span></div>
   </div>
 </section>
 
@@ -447,7 +489,7 @@ body{position:relative}
     <div class="chap"><span class="no">06</span><span class="cn">板评·话术</span><span class="en">Reviews</span></div>
     <div class="rule"></div>
     <div class="cards2" id="vSum"></div>
-    <button class="enter" id="btnEnd" style="margin-top:36px"><span>继 续</span></button>
+    <div class="nextbox" data-next="s7"><i></i><span>继续 · 尾声</span></div>
   </div>
 </section>
 
@@ -480,7 +522,7 @@ body{position:relative}
 (function(){
 'use strict';
 var $ = function(id){ return document.getElementById(id); };
-var CARD = null, cur = 's1', BG = null;
+var CARD = null, cur = 's1', BG = null, hintT1 = 0, hintT2 = 0;
 var SLUG = (location.pathname.split('/').pop() || '').replace(/\.html$/, '');
 var ED_KEY = 'cf_draft_' + (SLUG || 'x');
 var RAW_HTML = '<!DOCTYPE html>' + document.documentElement.outerHTML;
@@ -545,6 +587,34 @@ function go(id){
       void el.offsetWidth;
       el.style.animation = '';
     });
+    var hd = document.querySelector('#s2 .door[data-go="s3"]');
+    var hl = $('hintLine');
+    if (hd) hd.classList.remove('hint');
+    if (hl) hl.classList.remove('on');
+    clearTimeout(hintT1); clearTimeout(hintT2);
+    hintT1 = setTimeout(function(){
+      if (hd) hd.classList.add('hint');
+      if (hl) hl.classList.add('on');
+    }, 900);
+    hintT2 = setTimeout(function(){
+      if (hd) hd.classList.remove('hint');
+      if (hl) hl.classList.remove('on');
+    }, 9000);
+  }
+  if (id !== 's2'){
+    var hd2 = document.querySelector('#s2 .door[data-go="s3"]');
+    var hl2 = $('hintLine');
+    if (hd2) hd2.classList.remove('hint');
+    if (hl2) hl2.classList.remove('on');
+  }
+  if (id === 's3'){
+    var fills = document.querySelectorAll('#s3 .attr-fill');
+    [].forEach.call(fills, function(f, i){
+      f.style.transition = 'none'; f.style.width = '0';
+      void f.offsetWidth;
+      f.style.transition = '';
+      setTimeout(function(){ f.style.width = (f.getAttribute('data-w') || 60) + '%'; }, 140 + i * 110);
+    });
   }
   if (id === 's1') resetTarot();
 }
@@ -576,7 +646,7 @@ function fill(c){
 
   /* 称号 */
   var tags = f.tags || [];
-  ['vTouts','vTouts2'].forEach(function(id){
+  ['vTouts'].forEach(function(id){
     var box = $(id); if (!box) return;
     box.innerHTML = '';
     tags.forEach(function(t){ if (t) box.appendChild(div('tout', t)); });
@@ -586,14 +656,19 @@ function fill(c){
   var attrs = $('vAttrs'); if (attrs){
     attrs.innerHTML = '';
     var list = (f.style && f.style.length) ? f.style : tags;
+    var pct = [100, 92, 84, 76, 68, 60];
     list.forEach(function(name, i){
       if (!name) return;
-      var c = document.createElement('div'); c.className = 'st-card';
-      var no = div('st-no', '0' + (i + 1));
-      var nm = div('st-name', name);
-      var ln = document.createElement('div'); ln.className = 'st-line';
-      c.appendChild(no); c.appendChild(nm); c.appendChild(ln);
-      attrs.appendChild(c);
+      var row = document.createElement('div'); row.className = 'attr-row';
+      row.style.animationDelay = (0.16 + i * 0.13) + 's';
+      row.appendChild(div('attr-no', '0' + (i + 1)));
+      row.appendChild(div('attr-name', name));
+      var bar = document.createElement('div'); bar.className = 'attr-bar';
+      var fill = document.createElement('div'); fill.className = 'attr-fill';
+      fill.setAttribute('data-w', pct[i] || 60);
+      bar.appendChild(fill); row.appendChild(bar);
+      row.appendChild(div('attr-val', (pct[i] || 60) + '%'));
+      attrs.appendChild(row);
     });
   }
 
@@ -738,8 +813,11 @@ var doors = document.querySelectorAll('.door');
 for (var i = 0; i < doors.length; i++){
   doors[i].onclick = function(){ go(this.getAttribute('data-go')); };
 }
-$('btnMore').onclick = function(){ go('s2'); };
-if ($('btnEnd')) $('btnEnd').onclick = function(){ go('s7'); };
+var nbs = document.querySelectorAll('.nextbox');
+for (var n = 0; n < nbs.length; n++){
+  nbs[n].onclick = function(){ go(this.getAttribute('data-next')); };
+}
+
 
 /* 左上角编辑：就地修改，不跳工厂 */
 var EFIELDS = [
