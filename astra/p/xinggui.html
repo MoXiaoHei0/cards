@@ -919,7 +919,12 @@ function fill(c){
 
   /* 背景音乐：自己有就用自己的，没有就用站点自带的那首 */
   var bg = $('bgm');
-  if (bg){ bg.src = f.bgm || DEFAULT_BGM; BG = bg; }
+  if (bg){
+    bg.src = f.bgm || DEFAULT_BGM;
+    BG = bg;
+    /* 打开页面就开始预取，别等点了才申请 */
+    try{ bg.load(); }catch(e){}
+  }
 }
 
 /* 揭牌：点牌翻到反面（内容面），牌下浮出选项；点选项进主界面 */
