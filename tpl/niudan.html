@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>黑酱 · 扭蛋机</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --cream:#FBF6EE; --paper:#FFFDF8; --ink:#4A3E37; --dim:#9A897C; --line:#EADCCB;
+  --pink:#F5AFC0; --pinkS:#FDE4EA; --mint:#A6DBC6; --mintS:#E0F4ED;
+  --yellow:#F8DD96; --yellowS:#FEF4D8; --purple:#CBB8E8; --purpleS:#EDE6F9;
+  --gold:#D8B36A;
+  --sh:0 14px 30px rgba(168,140,118,.18);
+}
+html,body{height:100%}
+body{
+  background:var(--cream);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  overflow:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(rgba(199,178,155,.22) 1px,transparent 1px);
+  background-size:16px 16px;opacity:.85;
+}
+body:after{
+  content:"";position:fixed;inset:-20%;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(38% 26% at 18% 12%,rgba(247,183,199,.28),transparent 70%),
+    radial-gradient(34% 24% at 86% 78%,rgba(166,219,198,.26),transparent 70%),
+    radial-gradient(40% 30% at 62% 4%,rgba(248,221,150,.22),transparent 72%);
+  filter:blur(6px);
+}
+.screen{
+  position:fixed;inset:0;z-index:2;display:flex;align-items:flex-start;justify-content:center;
+  padding:0;opacity:0;visibility:hidden;transition:opacity .5s ease,visibility .5s;
+  overflow-y:auto;-webkit-overflow-scrolling:touch}
+.screen.on{opacity:1;visibility:visible}
+.wrap{width:100%;max-width:420px;min-height:100dvh;padding:0 22px 46px;display:flex;flex-direction:column;position:relative}
+
+/* 顶栏 */
+.bar{position:fixed;top:0;left:0;right:0;height:56px;z-index:5;display:flex;align-items:center;
+  justify-content:space-between;padding:0 18px;pointer-events:none}
+.bar .mark{margin-left:auto;font-size:9px;letter-spacing:.24em;color:#FFF9F2;background:rgba(74,62,55,.52);
+  padding:6px 11px;border-radius:20px;pointer-events:auto;backdrop-filter:blur(4px)}
+.bar .bk{pointer-events:auto;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);
+  background:rgba(255,253,248,.94);color:var(--ink);font-size:15px;line-height:1;cursor:pointer;
+  box-shadow:0 6px 14px rgba(168,140,118,.14);display:none}
+.bar .bk.on{display:block}
+
+/* ---------- 01 开场 ---------- */
+.s1{padding-top:60px;align-items:center;justify-content:center}
+.kick{font-size:10px;letter-spacing:.32em;color:var(--gold);text-align:center}
+.sub{margin-top:9px;font-size:11.5px;letter-spacing:.14em;color:var(--dim);text-align:center}
+.stage{position:relative;flex:none;width:100%;height:344px;display:flex;align-items:center;justify-content:center;margin:6px 0 0}
+
+.gacha{position:relative;width:206px;height:286px;transition:transform .62s ease,opacity .62s ease,filter .62s ease}
+.gacha.dim{transform:scale(.84);opacity:.32;filter:blur(.6px)}
+.gbody{position:absolute;inset:0;border-radius:28px;border:2px solid #E9DAC8;
+  background:linear-gradient(180deg,#FFFDF9 0%,#FDF6EC 62%,#F7EBDC 100%);
+  box-shadow:var(--sh),inset 0 2px 0 #fff}
+.dome{position:absolute;left:18px;right:18px;top:20px;height:142px;border-radius:50% 50% 44% 44%;
+  border:2px solid rgba(230,212,196,.95);overflow:hidden;
+  background:radial-gradient(circle at 34% 26%,rgba(255,255,255,.98),rgba(255,255,255,.6) 42%,rgba(252,238,242,.66) 100%),
+    linear-gradient(160deg,rgba(247,183,199,.22),rgba(166,219,198,.18))}
+.dome:after{content:"";position:absolute;left:14%;top:10%;width:34%;height:24%;
+  background:rgba(255,255,255,.9);border-radius:50%;filter:blur(3px);transform:rotate(-16deg)}
+.mini{position:absolute;width:36px;height:32px;border-radius:50%/46%;
+  background:linear-gradient(180deg,#FFFDF8 0 52%,var(--mc,#F5AFC0) 52% 100%);
+  border:1.5px solid rgba(233,218,200,.9);box-shadow:0 4px 8px rgba(180,150,130,.16)}
+.mini.a{left:24px;bottom:18px;--mc:#F5AFC0;animation:bob 3.4s ease-in-out infinite}
+.mini.b{right:26px;bottom:26px;--mc:#A6DBC6;animation:bob 3.4s ease-in-out infinite .6s}
+.mini.c{left:82px;bottom:40px;--mc:#F8DD96;width:32px;height:28px;animation:bob 3.4s ease-in-out infinite 1.2s}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-5deg)}}
+.stripe{position:absolute;left:0;right:0;top:163px;height:20px;
+  background:repeating-linear-gradient(90deg,#F5AFC0 0 12px,#FFFDF8 12px 24px,#A6DBC6 24px 36px,#FFFDF8 36px 48px);
+  opacity:.9}
+.knob{position:absolute;left:50%;top:184px;width:50px;height:50px;margin-left:-25px;border-radius:50%;
+  border:2px solid #E7C99B;background:radial-gradient(circle at 34% 28%,#FFF0CC,#F6D79A 62%,#E4BC77 100%);
+  box-shadow:0 6px 12px rgba(190,150,110,.28),inset 0 -3px 6px rgba(180,140,100,.22);
+  display:flex;align-items:center;justify-content:center;font-size:17px;color:#8A6A3E;
+  cursor:pointer;transition:transform .42s cubic-bezier(.4,.1,.3,1)}
+.knob.spin{transform:rotate(360deg)}
+.slot{position:absolute;left:50%;bottom:16px;width:62px;height:26px;margin-left:-31px;border-radius:10px;
+  background:linear-gradient(180deg,#6B5B4E,#8A7768);box-shadow:inset 0 3px 6px rgba(60,44,32,.32)}
+.slot:after{content:"";position:absolute;left:9px;right:9px;bottom:5px;height:10px;border-radius:6px;
+  background:linear-gradient(180deg,#F3E3CE,#FFF8EC);opacity:.9}
+.glabel{position:absolute;left:0;right:0;top:132px;text-align:center;font-size:8px;
+  letter-spacing:.3em;color:#B9A48E}
+
+/* 胶囊 */
+.cap{position:absolute;left:50%;top:0;width:74px;height:66px;margin-left:-37px;opacity:0;
+  transition:transform .62s cubic-bezier(.34,1.4,.5,1),opacity .3s}
+.cap .cl,.cap .cr{position:absolute;inset:0;border-radius:50%/48%;border:2px solid rgba(233,218,200,.95)}
+.cap .cl{clip-path:inset(0 0 50% 0);background:linear-gradient(180deg,#FFFDF9,#F8EEE0)}
+.cap .cr{clip-path:inset(50% 0 0 0);background:linear-gradient(180deg,#F9C6D2,#F5AFC0)}
+.cap.show{opacity:1;transform:translateY(198px)}
+.cap.open .cl{transform:translate(-16px,-26px) rotate(-24deg);transition:transform .55s ease}
+.cap.open .cr{transform:translate(16px,16px) rotate(16deg);transition:transform .55s ease}
+
+/* 牌面 */
+.facecard{position:absolute;left:50%;top:50%;width:min(66vw,234px);aspect-ratio:5/7.3;
+  margin-left:calc(-1 * min(33vw,117px));margin-top:calc(-1 * min(48.18vw,170.8px));
+  border-radius:14px;border:1.5px solid #EAC9A9;background:
+    linear-gradient(168deg,#FFFDFB 0%,#FFFAF4 44%,#FEF1F1 100%);
+  box-shadow:0 22px 44px rgba(168,140,118,.26),0 0 0 5px rgba(255,255,255,.94),inset 0 0 0 1px #fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:26px 12px;
+  opacity:0;transform:scale(.86);transition:opacity .6s ease,transform .7s cubic-bezier(.3,1.3,.5,1)}
+.facecard.on{opacity:1;transform:scale(1)}
+.facecard:after{content:"";position:absolute;inset:11px;border:1px dashed #E6CDB4;border-radius:9px}
+.facecard .fdeco{font-size:9px;letter-spacing:.3em;color:#D9B98E;margin-bottom:12px}
+.facecard .big{font-size:clamp(30px,8.6vw,40px);letter-spacing:.24em;line-height:1.4;
+  writing-mode:vertical-rl;color:#493A31;font-weight:600;text-indent:.24em}
+.facecard .fs{margin-top:16px;font-size:10px;letter-spacing:.18em;color:#A67F6A;text-align:center}
+.facecard .fno{margin-top:14px;font-size:8px;letter-spacing:.32em;color:#C9AF93}
+
+.hint{margin-top:18px;font-size:11.5px;letter-spacing:.16em;color:var(--dim);text-align:center;min-height:18px}
+.hint.blink{animation:blink 2.6s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:.42}50%{opacity:1}}
+.cta{margin-top:16px;align-self:center;padding:13px 34px;border-radius:26px;border:1px solid #E8C992;
+  background:linear-gradient(180deg,#FFF6E2,#FBEAC6);color:#7A5F36;font-size:13px;letter-spacing:.2em;
+  box-shadow:0 10px 20px rgba(200,168,120,.26);cursor:pointer;opacity:0;transition:opacity .5s}
+.cta.on{opacity:1}
+
+/* ---------- 02 主界面 ---------- */
+.s2{padding-top:64px;align-items:center;justify-content:center}
+.name{margin-top:8px;font-size:34px;letter-spacing:.14em;text-align:center;color:#3D332B;font-weight:600}
+.alias{margin-top:8px;font-size:10px;letter-spacing:.34em;color:var(--dim);text-align:center}
+.brief{margin-top:16px;font-size:12.5px;line-height:1.95;letter-spacing:.05em;color:#6B594C;text-align:center;
+  background:rgba(255,255,255,.78);border-radius:16px;padding:13px 16px;
+  box-shadow:0 12px 22px rgba(150,120,100,.12);max-width:300px}
+.tags{margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.tagpill{font-size:10.5px;letter-spacing:.1em;color:#6B5040;background:#fff;
+  padding:7px 13px;border-radius:20px;box-shadow:0 6px 12px rgba(150,120,100,.14)}
+.tagpill:nth-child(1){border-bottom:3px solid #F5AFC0}
+.tagpill:nth-child(2){border-bottom:3px solid #A6DBC6}
+.tagpill:nth-child(3){border-bottom:3px solid #F8DD96}
+
+.tray{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:20px 18px;
+  width:100%;max-width:320px;align-self:center}
+.eggcell{display:flex;flex-direction:column;align-items:center;gap:9px;opacity:0;
+  transform:translateY(26px) rotate(-9deg);animation:none}
+.eggcell.in{animation:dropin .62s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes dropin{to{opacity:1;transform:translateY(0) rotate(0)}}
+.egg{position:relative;width:98px;height:112px;cursor:pointer;
+  border-radius:50% 50% 46% 46%/54% 54% 62% 62%;
+  background:linear-gradient(180deg,#FFFEFB 0 50%,var(--c,#F5AFC0) 50% 100%);
+  border:2px solid rgba(233,218,200,.95);
+  box-shadow:0 14px 24px rgba(172,142,120,.22),inset 0 2px 0 rgba(255,255,255,.9);
+  transition:transform .3s cubic-bezier(.3,1.5,.5,1),box-shadow .3s}
+.egg:active{transform:scale(.94)}
+.egg.pop{transform:translateY(-10px) scale(1.1);box-shadow:0 22px 30px rgba(172,142,120,.3),
+  0 0 0 6px rgba(255,255,255,.7),0 0 30px rgba(255,220,230,.9)}
+.egg .gloss{position:absolute;left:18%;top:10%;width:30%;height:18%;border-radius:50%;
+  background:rgba(255,255,255,.92);filter:blur(1px)}
+.egg .no{position:absolute;left:0;right:0;top:12px;text-align:center;font-size:8.5px;
+  letter-spacing:.22em;color:#B5A08C}
+.egg .lab{position:absolute;left:0;right:0;bottom:31px;text-align:center;font-size:13px;
+  letter-spacing:.14em;color:#4F3B31;font-weight:600}
+.egg .lab2{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:7px;
+  letter-spacing:.24em;color:rgba(79,59,49,.55)}
+.hint2{margin-top:26px;font-size:11.5px;letter-spacing:.14em;color:var(--dim);text-align:center}
+.hint2.blink{animation:blink 2.4s ease-in-out infinite}
+
+/* 引导：只亮第一颗蛋 */
+.tray.guide .eggcell .egg{opacity:.46;filter:saturate(.68) brightness(1.03);transition:opacity .8s ease,filter .8s ease,transform .3s}
+.tray.guide .eggcell:first-child .egg{opacity:1;filter:none;
+  box-shadow:0 12px 20px rgba(172,142,120,.2),inset 0 2px 0 rgba(255,255,255,.9),
+    0 0 0 3px rgba(255,255,255,.9),0 0 26px rgba(245,175,192,.85);
+  animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+.tray.guide .eggcell:first-child .lab{color:#4A3A2E}
+
+/* 一句话小框 */
+.quote{margin:2px 0 4px;padding:16px 18px;border-radius:14px;background:linear-gradient(180deg,#FDF3E6,#FBEEE0);
+  border:1px dashed #E7CFB6;font-size:12.5px;line-height:2;color:#6B5647;letter-spacing:.05em;text-align:center}
+.quote .qk{display:block;font-size:9px;letter-spacing:.26em;color:#C2A992;margin-bottom:7px}
+
+/* ---------- 内页：糖果贴纸风（与星轨的纸条风彻底区分） ---------- */
+.screen.huep{background:radial-gradient(130% 54% at 50% -4%,#FBD3DE 0%,#FDE9EF 40%,#FBF6EE 78%)}
+.screen.huem{background:radial-gradient(130% 54% at 50% -4%,#BFE7D6 0%,#E4F6EE 40%,#FBF6EE 78%)}
+.screen.huey{background:radial-gradient(130% 54% at 50% -4%,#FAE3AF 0%,#FEF5DB 40%,#FBF6EE 78%)}
+.screen.huev{background:radial-gradient(130% 54% at 50% -4%,#D8CAF1 0%,#EFE9FA 40%,#FBF6EE 78%)}
+
+.paperwrap{padding-top:72px}
+.phead{display:flex;align-items:center;gap:9px;margin-bottom:15px;padding:0 2px}
+.capico{width:22px;height:22px;border-radius:50%;flex:none;
+  background:linear-gradient(180deg,#FFFDF8 0 50%,var(--cc,#F5AFC0) 50% 100%);
+  border:1.5px solid rgba(255,255,255,.95);box-shadow:0 4px 8px rgba(150,120,100,.22)}
+.pcn{font-size:21px;letter-spacing:.14em;color:#3D332B;font-weight:600}
+.pen{font-size:8px;letter-spacing:.26em;color:#A69584;margin-top:4px}
+.pno{margin-left:auto;font-size:9px;letter-spacing:.16em;color:#fff;background:rgba(74,62,55,.56);
+  padding:5px 10px;border-radius:13px}
+
+/* 贴纸卡 */
+.paper{position:relative;width:100%;background:#fff;border-radius:22px;padding:22px 18px;
+  box-shadow:0 18px 34px rgba(150,120,100,.16),0 2px 0 rgba(255,255,255,.9) inset;
+  transform:rotate(-.5deg)}
+.paper+.paper{margin-top:16px}
+
+/* 风格：胶囊点阵 */
+.arow{display:flex;align-items:center;gap:10px;padding:11px 0}
+.ai{font-size:9px;letter-spacing:.14em;color:#C6B3A0;width:16px}
+.an{font-size:13.5px;letter-spacing:.1em;color:#41352C;width:54px;flex:none;font-weight:600}
+.dots{flex:1;display:flex;gap:5px}
+.dot{flex:1;height:10px;border-radius:10px;background:#F4EBE1;transition:background .45s ease,transform .45s ease}
+.dot.f{background:linear-gradient(90deg,#F9BFD0,#FADD9E);box-shadow:0 0 8px rgba(245,175,192,.4)}
+.ap{font-size:10px;color:#AA9584;width:34px;text-align:right}
+.timecard{margin-top:14px;background:linear-gradient(180deg,#F4FBF8,#EAFAF3);border-radius:18px;
+  padding:14px 16px;display:flex;flex-direction:column;gap:7px;transform:none}
+.timecard .row{display:flex;justify-content:space-between;font-size:11.5px;color:#4F8175;letter-spacing:.06em}
+
+/* 须知：小票 */
+.ticket{position:relative;background:#fff;border-radius:16px;padding:15px 16px 15px 48px;
+  box-shadow:0 12px 22px rgba(150,120,100,.13);margin-bottom:11px;
+  border-top:2px dashed #EFF0E9;border-bottom:2px dashed #EFF0E9}
+.tn{position:absolute;left:14px;top:15px;width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(180deg,#FDE9EF,#F8C3D3);color:#8B4E5E;font-size:10px;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 3px 6px rgba(240,170,190,.35)}
+.ticket p{font-size:12.5px;line-height:1.95;color:#564940;letter-spacing:.03em}
+
+/* 对话 */
+.dlg{display:flex;flex-direction:column;gap:16px;margin-bottom:20px}
+.dround{display:flex;flex-direction:column;gap:14px;transition:opacity .8s ease,transform .8s ease}
+.dround.past{opacity:.34;transform:scale(.965);margin-bottom:4px}
+.row{display:flex;align-items:flex-end;gap:8px}
+.row.r{justify-content:flex-end}
+.ava{width:24px;height:24px;border-radius:50%;flex:none;margin-bottom:3px;
+  background:linear-gradient(180deg,#FFFDF8 0 50%,#F5AFC0 50% 100%);
+  border:1.5px solid rgba(255,255,255,.9);box-shadow:0 3px 6px rgba(150,120,100,.2)}
+.row.r .ava{background:linear-gradient(180deg,#FFFDF8 0 50%,#F8DD96 50% 100%);order:2}
+.bub{max-width:80%;padding:13px 15px;border-radius:18px;font-size:12.5px;line-height:1.9;
+  letter-spacing:.03em;background:#fff;color:#463A32;
+  box-shadow:0 8px 18px rgba(150,120,100,.14)}
+.row.r .bub{background:linear-gradient(180deg,#FFFCF2,#FEF0D6);color:#6A5024}
+.opts{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+.opt{padding:13px 15px;border-radius:15px;background:#fff;color:#514237;
+  font-size:12.5px;letter-spacing:.05em;cursor:pointer;text-align:center;
+  box-shadow:0 8px 16px rgba(150,120,100,.12);border-left:3px solid #F5AFC0;
+  transition:transform .18s,opacity .35s,background .35s}
+.opt.on{background:linear-gradient(180deg,#FFF7E4,#FBEACB);border-left-color:#E8C07A;color:#7A5A2E}
+.opt.dim{opacity:.28;pointer-events:none}
+
+/* 板评：斜贴便签 */
+.notes{display:flex;flex-direction:column;gap:16px;padding:4px 0}
+.note{border-radius:16px;padding:18px 16px;position:relative;
+  box-shadow:0 12px 22px rgba(150,120,100,.16)}
+.note.y{background:linear-gradient(180deg,#FEF6DA,#FBEAC0);transform:rotate(1.4deg)}
+.note.p{background:linear-gradient(180deg,#FEEBF1,#FADAE5);transform:rotate(-1.4deg)}
+.note .nt{font-size:9.5px;letter-spacing:.2em;color:#A8917B;margin-bottom:8px}
+.note .nb{font-size:12.5px;line-height:1.95;color:#55463C}
+.note .pin{position:absolute;top:-7px;left:50%;margin-left:-7px;width:14px;height:14px;
+  border-radius:50%;background:linear-gradient(180deg,#FBE9A8,#E9C86E);box-shadow:0 2px 4px rgba(160,130,90,.3)}
+
+/* 下一步：糖果按钮 */
+.next{margin-top:20px;padding:15px;border-radius:20px;text-align:center;font-size:12.5px;
+  letter-spacing:.14em;color:#fff;background:linear-gradient(90deg,#F5AFC0,#F8DCA0);
+  cursor:pointer;box-shadow:0 14px 26px rgba(245,175,192,.45)}
+
+/* 尾声 */
+.links{display:flex;flex-direction:column;gap:10px}
+.lk{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-radius:15px;
+  background:#fff;box-shadow:0 10px 20px rgba(150,120,100,.12);
+  font-size:12px;color:#514237;text-decoration:none}
+.lk span{font-size:11px;color:#B49C86}
+.mnote{margin-top:18px;font-size:12px;line-height:2;color:#6F5C50;letter-spacing:.04em;
+  text-align:center;padding:16px 10px;border-radius:16px;background:rgba(255,255,255,.7)}
+.foot{margin-top:20px;text-align:center;font-size:9.5px;letter-spacing:.26em;color:#BCAA99}
+
+/* 星星彩蛋 */
+.star{position:fixed;right:16px;bottom:22px;z-index:6;width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:15px;color:#fff;
+  background:linear-gradient(180deg,#F9C9D6,#F5AFC0);box-shadow:0 8px 18px rgba(245,175,192,.42);
+  cursor:pointer;animation:tw 3.2s ease-in-out infinite}
+@keyframes tw{0%,100%{transform:scale(.94);opacity:.82}50%{transform:scale(1.06);opacity:1}}
+.eggbox{position:fixed;inset:0;z-index:9;display:flex;align-items:center;justify-content:center;
+  padding:22px;background:rgba(74,62,55,.42);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  opacity:0;visibility:hidden;transition:opacity .45s,visibility .45s}
+.eggbox.on{opacity:1;visibility:visible}
+.eggbox .in{width:100%;max-width:400px;max-height:78vh;overflow-y:auto;background:var(--paper);
+  border-radius:18px;padding:24px 22px 20px;box-shadow:0 24px 50px rgba(120,96,80,.3)}
+.eggbox .et{font-size:10px;letter-spacing:.3em;color:var(--gold);text-align:center;margin-bottom:14px}
+.eggbox .eb{font-size:12.5px;line-height:2.1;color:#54463D;white-space:pre-wrap;letter-spacing:.03em}
+.eggbox .ex{margin:22px auto 0;display:block;padding:11px 30px;border-radius:22px;border:1px solid #E9D4B4;
+  background:linear-gradient(180deg,#FFF6E4,#FBEACB);color:#7A5F36;font-size:12px;letter-spacing:.16em}
+
+/* 闪白转场 */
+.flash{position:fixed;inset:0;z-index:8;background:#FFFDF8;opacity:0;pointer-events:none}
+.flash.run{animation:fl .58s ease}
+@keyframes fl{0%{opacity:0}28%{opacity:.96}100%{opacity:0}}
+</style>
+</head>
+<body>
+
+<script>window.__CARD__=null;</script>
+
+<div class="bar">
+  <button class="bk" id="bk">&#8592;</button>
+  <span class="mark" id="mark">扭蛋机 · 001</span>
+</div>
+
+<!-- 01 开场 -->
+<section class="screen on" id="s1">
+  <div class="wrap s1">
+    <div class="kick" id="vBrand">A LITTLE GACHA SHOP</div>
+    <div class="sub" id="vSub">扭蛋机 · 第 001 号</div>
+
+    <div class="stage">
+      <div class="gacha" id="gacha">
+        <div class="gbody"></div>
+        <div class="dome">
+          <span class="mini a"></span>
+          <span class="mini b"></span>
+          <span class="mini c"></span>
+        </div>
+        <div class="stripe"></div>
+        <div class="glabel">GACHA</div>
+        <div class="knob" id="knob">&#8635;</div>
+        <div class="slot"></div>
+      </div>
+
+      <div class="cap" id="cap"><div class="cl"></div><div class="cr"></div></div>
+
+      <div class="facecard" id="facecard">
+        <div class="fdeco">★ 扭 蛋 机 出 品 ★</div>
+        <div class="big" id="vBig">幸运</div>
+        <div class="fs" id="vFs">在星夜里接住每一个走丢的人</div>
+        <div class="fno" id="vFno">NO. 001</div>
+      </div>
+    </div>
+
+    <div class="hint blink" id="hint">转一下 · 拧出今天的运气</div>
+    <button class="cta" id="cta">打开看看</button>
+  </div>
+</section>
+
+<!-- 02 主界面 -->
+<section class="screen" id="s2">
+  <div class="wrap s2">
+    <div class="alias" id="vAlias">MOXIAOHEI</div>
+    <div class="name" id="vName">黑酱</div>
+    <div class="brief" id="vBrief">在星夜里接住每一个走丢的人</div>
+    <div class="tags" id="vTags"></div>
+
+    <div class="tray" id="tray">
+      <div class="eggcell" data-go="s3">
+        <div class="egg" style="--c:#F5AFC0">
+          <span class="gloss"></span><span class="no">01</span>
+          <span class="lab">风格</span><span class="lab2">STYLE</span>
+        </div>
+      </div>
+      <div class="eggcell" data-go="s4">
+        <div class="egg" style="--c:#A6DBC6">
+          <span class="gloss"></span><span class="no">02</span>
+          <span class="lab">须知</span><span class="lab2">NOTE</span>
+        </div>
+      </div>
+      <div class="eggcell" data-go="s5">
+        <div class="egg" style="--c:#F8DD96">
+          <span class="gloss"></span><span class="no">03</span>
+          <span class="lab">对话</span><span class="lab2">CHAT</span>
+        </div>
+      </div>
+      <div class="eggcell" data-go="s6">
+        <div class="egg" style="--c:#CBB8E8">
+          <span class="gloss"></span><span class="no">04</span>
+          <span class="lab">板评</span><span class="lab2">REVIEW</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint2 blink" id="hint2">先从这里开始 · 点一颗蛋</div>
+  </div>
+</section>
+
+<!-- 03 风格 -->
+<section class="screen huep" id="s3">
+  <div class="wrap paperwrap">
+    <div class="phead">
+      <span class="capico" style="--cc:#F5AFC0"></span>
+      <span class="pcn">风格</span><span class="pen">STYLE</span>
+      <span class="pno">NO.01</span>
+    </div>
+    <div class="paper">
+      <div class="quote"><span class="qk">今 天 的 一 句</span><span id="vOneline">今天想被谁接住，就投一枚币下去。</span></div>
+      <div id="vAttrs"></div>
+    </div>
+    <div class="timecard" id="vTime"></div>
+    <div class="next" data-next="s4">记住了 · 去看须知</div>
+  </div>
+</section>
+
+<!-- 04 须知 -->
+<section class="screen huem" id="s4">
+  <div class="wrap paperwrap">
+    <div class="phead">
+      <span class="capico" style="--cc:#A6DBC6"></span>
+      <span class="pcn">须知</span><span class="pen">NOTE</span>
+      <span class="pno">NO.02</span>
+    </div>
+    <div id="vRules"></div>
+    <div class="next" data-next="s5">知道了 · 去聊两句</div>
+  </div>
+</section>
+
+<!-- 05 对话 -->
+<section class="screen huey" id="s5">
+  <div class="wrap paperwrap">
+    <div class="phead">
+      <span class="capico" style="--cc:#F8DD96"></span>
+      <span class="pcn">对话剧情</span><span class="pen">CHAT</span>
+      <span class="pno">NO.03</span>
+    </div>
+    <div class="paper">
+      <div class="dlg" id="vDlg"></div>
+      <div class="opts" id="vOpts"></div>
+    </div>
+    <div class="next" data-next="s6">继续 · 看看板评</div>
+  </div>
+</section>
+
+<!-- 06 板评 -->
+<section class="screen huev" id="s6">
+  <div class="wrap paperwrap">
+    <div class="phead">
+      <span class="capico" style="--cc:#CBB8E8"></span>
+      <span class="pcn">板评 · 话术</span><span class="pen">REVIEW</span>
+      <span class="pno">NO.04</span>
+    </div>
+    <div class="notes" id="vNotes"></div>
+    <div class="next" data-next="s7">继续 · 尾声</div>
+  </div>
+</section>
+
+<!-- 07 尾声 -->
+<section class="screen" id="s7">
+  <div class="wrap paperwrap">
+    <div class="phead">
+      <span class="capico" style="--cc:#D8B36A"></span>
+      <span class="pcn">尾声</span><span class="pen">THE END</span>
+      <span class="pno">FIN</span>
+    </div>
+    <div class="links" id="vLinks"></div>
+    <div class="mnote" id="vNote"></div>
+    <div class="foot" id="vFoot">GACHA · MOXIAOHEI</div>
+  </div>
+</section>
+
+<div class="star" id="star">&#10022;</div>
+<div class="eggbox" id="eggbox">
+  <div class="in">
+    <div class="et">一 张 没 送 出 的 便 条</div>
+    <div class="eb" id="eggBody"></div>
+    <button class="ex" id="eggClose">关 上</button>
+  </div>
+</div>
+
+<div class="flash" id="flash"></div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var CARD = window.__CARD__ || null;
+  var cur = 's1';
+
+  function put(el, t){ if (el) el.textContent = (t == null ? '' : String(t)); }
+  function esc(s){ return String(s == null ? '' : s); }
+
+  /* ---------- 数据填充 ---------- */
+  function fill(c){
+    var f = (c && c.f) || {};
+    put($('vBrand'), f.introBrand || 'A LITTLE GACHA SHOP');
+    put($('vSub'), f.introSub || '扭蛋机 · 第 001 号');
+    put($('vBig'), (f.faceBig || '').trim() || f.name || '幸运');
+    put($('vFs'), f.brief || '');
+    put($('vFno'), 'NO. ' + (String(f.introSub || '').replace(/[^\d]/g, '').replace(/^0+(?=\d)/, '').padStart(3, '0') || '001'));
+    put($('vName'), f.name || '');
+    put($('vAlias'), (f.alias || '').toUpperCase());
+    put($('vBrief'), f.brief || '');
+    put($('vFoot'), 'GACHA · ' + (f.alias || f.name || ''));
+    put($('vOneline'), (f.oneline || '').trim() || '今天想被谁接住，就投一枚币下去。');
+
+    var tg = $('vTags');
+    if (tg){
+      tg.innerHTML = '';
+      (f.tags || []).forEach(function(t){
+        var d = document.createElement('div'); d.className = 'tagpill'; d.textContent = t; tg.appendChild(d);
+      });
+    }
+
+    /* 风格 */
+    var at = $('vAttrs');
+    if (at){
+      at.innerHTML = '';
+      var PCT = [100, 92, 84, 76];
+      (f.style || []).forEach(function(n, i){
+        var row = document.createElement('div'); row.className = 'arow';
+        var idx = document.createElement('span'); idx.className = 'ai';
+        idx.textContent = ('0' + (i + 1)).slice(-2);
+        var nm = document.createElement('span'); nm.className = 'an'; nm.textContent = n;
+        var dots = document.createElement('div'); dots.className = 'dots';
+        var cnt = Math.round(PCT[i] / 20);
+        for (var k = 0; k < 5; k++){
+          var d = document.createElement('i'); d.className = 'dot' + (k < cnt ? ' f' : '');
+          dots.appendChild(d);
+        }
+        var pc = document.createElement('span'); pc.className = 'ap'; pc.textContent = PCT[i] + '%';
+        row.appendChild(idx); row.appendChild(nm); row.appendChild(dots); row.appendChild(pc);
+        at.appendChild(row);
+      });
+    }
+    var tm = $('vTime');
+    if (tm){
+      tm.innerHTML = '';
+      if (f.workday){ var r1 = document.createElement('div'); r1.className = 'row';
+        r1.innerHTML = '<span>平日</span><span></span>'; r1.lastChild.textContent = f.workday; tm.appendChild(r1); }
+      if (f.weekend){ var r2 = document.createElement('div'); r2.className = 'row';
+        r2.innerHTML = '<span>周末</span><span></span>'; r2.lastChild.textContent = f.weekend; tm.appendChild(r2); }
+    }
+
+    /* 须知 */
+    var rl = $('vRules');
+    if (rl){
+      rl.innerHTML = '';
+      (f.rules || []).forEach(function(t, i){
+        var d = document.createElement('div'); d.className = 'ticket';
+        var n = document.createElement('span'); n.className = 'tn';
+        n.textContent = ('0' + (i + 1)).slice(-2);
+        var p = document.createElement('p'); p.textContent = t;
+        d.appendChild(n); d.appendChild(p); rl.appendChild(d);
+      });
+    }
+
+    /* 板评 */
+    var nt = $('vNotes');
+    if (nt){
+      nt.innerHTML = '';
+      var Q = [['板评 I · 内容', f.q1, 'p'], ['话术 II · 内容', f.q2, 'y']];
+      Q.forEach(function(q){
+        var box = document.createElement('div');
+        box.className = 'note ' + q[2];
+        var pin = document.createElement('span'); pin.className = 'pin';
+        var t = document.createElement('div'); t.className = 'nt'; t.textContent = q[0];
+        var b = document.createElement('div'); b.className = 'nb';
+        b.textContent = (q[1] && q[1].text) ? q[1].text : '这张便签还空着，等你来写。';
+        box.appendChild(pin); box.appendChild(t); box.appendChild(b);
+        nt.appendChild(box);
+      });
+    }
+
+    /* 尾声 */
+    var lk = $('vLinks');
+    if (lk){
+      lk.innerHTML = '';
+      if ((f.links || []).length === 0){
+        var empty = document.createElement('div');
+        empty.className = 'lk';
+        empty.style.justifyContent = 'center';
+        empty.style.color = '#A08B78';
+        empty.textContent = '这里还没放链接 · 想加就告诉我';
+        lk.appendChild(empty);
+      }
+      (f.links || []).forEach(function(o){
+        var a = document.createElement('a');
+        a.className = 'lk'; a.href = o.url || '#'; a.target = '_blank';
+        var left = document.createElement('span');
+        left.textContent = o.label || '链接';
+        left.style.fontSize = '12px'; left.style.color = '#5B4A3E';
+        a.appendChild(left);
+        var right = document.createElement('span');
+        right.textContent = '前往 →';
+        a.appendChild(right);
+        lk.appendChild(a);
+      });
+    }
+    put($('vNote'), f.scribble1 || '');
+
+    /* 对话 */
+    buildDialogue(f);
+
+    /* 彩蛋 */
+    put($('eggBody'), (f.eggText || '').trim() || EGG_DEFAULT);
+  }
+
+  var EGG_DEFAULT = '写给还没来的那个人：\n\n我第一次点灯的时候，以为这只是个习惯。后来发现，是怕有人摸黑走上来，怕他在门口站太久，又不敢敲门。\n\n灯一直亮着。不用敲门。';
+
+  /* ---------- 屏幕切换 ---------- */
+  function go(id){
+    var from = $('s' + cur.charAt(1)) || $(cur);
+    if (from) from.classList.remove('on');
+    cur = id;
+    var to = $(id);
+    if (to){ to.classList.add('on'); to.scrollTop = 0; }
+    var bk = $('bk');
+    if (bk) bk.classList.toggle('on', id !== 's1' && id !== 's2');
+    if (id === 's2'){ playEggs(); }
+  }
+
+  /* ---------- 蛋依次滚入 ---------- */
+  var seenEgg = false;
+  function playEggs(){
+    var cells = document.querySelectorAll('.eggcell');
+    [].forEach.call(cells, function(c){ c.classList.remove('in'); });
+    [].forEach.call(cells, function(c, i){
+      setTimeout(function(){ c.classList.add('in'); }, 90 + i * 210);
+    });
+    var tr = $('tray');
+    if (tr) tr.classList.toggle('guide', !seenEgg);
+  }
+
+  /* ---------- 开场：拧一下 ---------- */
+  var spun = false;
+  function runGacha(){
+    if (spun) return;
+    spun = true;
+    var kn = $('knob'), cap = $('cap'), fc = $('facecard'), hint = $('hint'), cta = $('cta');
+    if (kn) kn.classList.add('spin');
+    if (hint){ hint.textContent = '咔哒 · 掉出来了'; hint.classList.remove('blink'); }
+    setTimeout(function(){
+      if (cap) cap.classList.add('show');
+    }, 340);
+    setTimeout(function(){
+      if (cap) cap.classList.add('open');
+      if (fc) fc.classList.add('on');
+      if (gc) gc.classList.add('dim');
+    }, 1220);
+    setTimeout(function(){
+      if (hint) hint.textContent = '里面是一张牌';
+      if (cta) cta.classList.add('on');
+    }, 1760);
+  }
+
+  /* ---------- 点蛋：闪一下再进 ---------- */
+  function openEgg(cell, goTo){
+    var egg = cell.querySelector('.egg');
+    if (egg) egg.classList.add('pop');
+    seenEgg = true;
+    var tr = $('tray');
+    if (tr) tr.classList.remove('guide');
+    var fl = $('flash');
+    if (fl){ fl.classList.remove('run'); void fl.offsetWidth; fl.classList.add('run'); }
+    setTimeout(function(){ go(goTo); }, 420);
+    setTimeout(function(){ if (egg) egg.classList.remove('pop'); }, 700);
+  }
+
+  /* ---------- 对话逐句 ---------- */
+  var ROUNDS = [], RI = 0, RBOX = null;
+  function parseScript(f){
+    var out = [], raw = (f.script || '').trim();
+    if (raw){
+      raw.split(/\n+/).forEach(function(ln){
+        ln = ln.trim(); if (!ln) return;
+        if (ln.indexOf('|') > -1 && out.length){
+          var a = ln.split('|');
+          out[out.length - 1].options.push({ label: (a[0] || '').trim(), reply: (a[1] || '').trim() });
+        } else {
+          out.push({ line: ln, options: [] });
+        }
+      });
+    }
+    if (out.length) return out;
+    var O = [
+      [(f.optA || '跟着你走'), (f.brA || '')],
+      [(f.optB || '先问一句'), (f.brB || '')],
+      [(f.optC || '只是路过'), (f.brC || '')]
+    ];
+    var body = (f.about || '').trim();
+    var paras = body ? body.split(/\n+/).filter(function(x){ return x.trim(); }) : [];
+    var opts = O.map(function(x){ return { label: x[0], reply: x[1] }; });
+    paras.forEach(function(t){ out.push({ line: t.trim(), options: opts }); });
+    return out;
+  }
+
+  function bub(txt, side){
+    var row = document.createElement('div');
+    row.className = 'row' + (side === 'r' ? ' r' : '');
+    var av = document.createElement('span'); av.className = 'ava';
+    var b = document.createElement('div');
+    b.className = 'bub'; b.textContent = txt;
+    row.appendChild(av);
+    row.appendChild(b);
+    (RBOX || $('vDlg')).appendChild(row);
+  }
+
+  function showRound(i){
+    var box = $('vDlg'), opts = $('vOpts');
+    if (!box || !opts) return;
+    if (i >= ROUNDS.length){ if (RBOX) RBOX.classList.add('past'); return; }
+    var r = ROUNDS[i];
+    if (RBOX) RBOX.classList.add('past');
+    RBOX = document.createElement('div'); RBOX.className = 'dround';
+    box.appendChild(RBOX);
+    bub(r.line, 'l');
+    opts.innerHTML = '';
+    setTimeout(function(){
+      r.options.forEach(function(o){
+        var b = document.createElement('div');
+        b.className = 'opt'; b.textContent = o.label;
+        b.onclick = function(){
+          if (b.classList.contains('dim')) return;
+          [].forEach.call(opts.children, function(x){ x.classList.add('dim'); });
+          b.classList.remove('dim'); b.classList.add('on');
+          if (o.reply) bub(o.reply, 'r');
+          setTimeout(function(){ opts.innerHTML = ''; showRound(i + 1); }, 950);
+        };
+        opts.appendChild(b);
+      });
+    }, 560);
+  }
+
+  function buildDialogue(f){
+    var box = $('vDlg'), opts = $('vOpts');
+    if (!box) return;
+    box.innerHTML = ''; if (opts) opts.innerHTML = '';
+    RBOX = null; RI = 0;
+    ROUNDS = parseScript(f);
+    showRound(0);
+  }
+
+  /* ---------- 事件 ---------- */
+  var gc = $('gacha');
+  if (gc) gc.onclick = runGacha;
+  if ($('knob')) $('knob').onclick = function(e){ if (e.stopPropagation) e.stopPropagation(); runGacha(); };
+  if ($('cta')) $('cta').onclick = function(){ go('s2'); };
+
+  [].forEach.call(document.querySelectorAll('.eggcell'), function(cell){
+    var egg = cell.querySelector('.egg');
+    if (egg) egg.onclick = function(){ openEgg(cell, cell.getAttribute('data-go')); };
+  });
+
+  [].forEach.call(document.querySelectorAll('.next'), function(n){
+    n.onclick = function(){ go(n.getAttribute('data-next')); };
+  });
+
+  if ($('bk')) $('bk').onclick = function(){ go('s2'); };
+
+  if ($('star')) $('star').onclick = function(){ $('eggbox').classList.add('on'); };
+  if ($('eggClose')) $('eggClose').onclick = function(){ $('eggbox').classList.remove('on'); };
+  if ($('eggbox')) $('eggbox').onclick = function(e){ if (e.target === this) this.classList.remove('on'); };
+
+  /* ---------- 启动 ---------- */
+  if (CARD){ fill(CARD); }
+  else {
+    fill({ f: { name: '黑酱', alias: 'MoXiaoHei', brief: '在星夜里接住每一个走丢的人',
+      tags: ['光遇陪玩', '树洞'], style: ['温柔', '慢热', '守时', '不失联'] } });
+  }
+  go('s1');
+})();
+</script>
+</body>
+</html>
