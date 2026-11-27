@@ -261,6 +261,125 @@ body:before{
   font-size:12px;line-height:1.9;color:var(--ink2);text-align:center}
 .ft{margin-top:14px;text-align:center;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--dim)}
 
+
+/* ===== 02 START 海报 ===== */
+.st{padding-top:64px;justify-content:center;align-items:center}
+.stposter{position:relative;width:100%;max-width:300px;background:#fff;border:4px solid var(--ink);
+  border-radius:8px;box-shadow:9px 9px 0 var(--pink);padding:30px 18px 20px;transform:rotate(-1.6deg);text-align:center}
+.stposter:before{content:"";position:absolute;left:-4px;right:-4px;top:-4px;height:18px;background:var(--pink);
+  border-bottom:4px solid var(--ink);border-radius:4px 4px 0 0}
+.stno{font-family:var(--mono);font-size:9px;letter-spacing:.24em;color:var(--pink)}
+.stname{margin-top:14px;font-size:42px;letter-spacing:.14em;font-weight:700;color:var(--ink);line-height:1.05}
+.stalias{margin-top:9px;font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--dim)}
+.sttags{margin-top:18px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.sttags .tg{font-size:10px;letter-spacing:.06em;color:var(--ink2);background:#fff;border:2px solid var(--ink);
+  border-radius:3px;padding:5px 9px;box-shadow:0 3px 0 var(--pinkL)}
+.ststart{margin-top:36px;padding:16px 44px;border-radius:999px;background:var(--pink);color:#fff;
+  border:4px solid var(--ink);box-shadow:0 8px 0 var(--ink);font-family:var(--mono);font-size:14px;
+  letter-spacing:.28em;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.ststart:active{transform:translateY(8px);box-shadow:0 0 0 var(--ink)}
+.sttip{margin-top:18px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--dim)}
+
+/* ===== 03 对话舞台 ===== */
+.cw{padding-top:62px}
+.hud{display:flex;align-items:center;justify-content:space-between;background:#fff;border:3px solid var(--ink);
+  border-radius:4px;padding:8px 11px;box-shadow:0 4px 0 var(--pinkL);
+  font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--ink)}
+.hud .dotl{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--pink);margin-right:7px}
+.chatbox{margin-top:16px;display:flex;flex-direction:column;gap:12px;min-height:40px}
+.cb{max-width:82%;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:11px 13px;
+  font-size:12.5px;line-height:1.9;color:var(--ink);box-shadow:0 4px 0 var(--pinkL);
+  animation:popin .4s cubic-bezier(.3,1.5,.5,1) both}
+.cb.me{align-self:flex-end;background:#FFF8E6;box-shadow:0 4px 0 var(--yellow)}
+@keyframes popin{from{opacity:0;transform:translateY(8px) scale(.97)}to{opacity:1;transform:none}}
+.copt{margin-top:16px;display:flex;flex-direction:column;gap:9px}
+.co{padding:12px 16px;border-radius:999px;border:3px solid var(--ink);background:#fff;color:var(--ink);
+  font-size:12px;text-align:center;box-shadow:0 4px 0 var(--ink);cursor:pointer;
+  transition:transform .12s,box-shadow .12s,opacity .3s}
+.co:active{transform:translateY(4px);box-shadow:0 0 0 var(--ink)}
+.co.on{background:var(--pinkS);box-shadow:0 4px 0 var(--pink)}
+.co.dim{opacity:.28;pointer-events:none}
+.linkrow{margin-top:14px;display:flex;flex-wrap:wrap;gap:9px}
+
+.lchip{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;
+  border:3px dashed var(--pink);background:#fff;font-size:11.5px;color:#A64B72;cursor:pointer;
+  box-shadow:0 4px 0 var(--pinkS)}
+.lchip b{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--pink)}
+.chint{margin-top:26px;text-align:center;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.18em;color:rgba(59,49,71,.34)}
+.endblk{width:100%;box-sizing:border-box;margin-top:16px;padding:14px;border:3px solid var(--ink);border-radius:6px;background:#fff;
+  box-shadow:0 5px 0 var(--mint);text-align:center}
+.endblk .e1{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--dim)}
+.endblk .e2{margin:8px 0 13px;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:.1em}
+.endbtn{display:inline-block;padding:12px 26px;border-radius:999px;background:var(--yellow);
+  border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);font-size:12px;cursor:pointer;color:var(--ink)}
+.endbtn:active{transform:translateY(5px);box-shadow:0 0 0 var(--ink)}
+
+/* ===== 子页：满色底 + 巨型水印 ===== */
+.sub{padding:0}
+.sw{width:100%;min-height:100dvh;padding:86px 22px 40px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.swpink{background:linear-gradient(180deg,#FFDDEC 0%,#FFF0F6 62%,#FFF9FC 100%)}
+.swmint{background:linear-gradient(180deg,#CFF2E8 0%,#ECFBF6 62%,#FBFFFD 100%)}
+.swlil{background:linear-gradient(180deg,#DCD0F7 0%,#F1EBFD 62%,#FDFBFF 100%)}
+.swend{background:linear-gradient(180deg,#FFEBB4 0%,#FFF8E3 62%,#FFFEFA 100%)}
+.wm{position:absolute;left:-4px;top:28px;font-family:var(--mono);font-size:50px;letter-spacing:.06em;
+  color:rgba(255,255,255,.66);white-space:nowrap;pointer-events:none}
+.swinner{position:relative;z-index:2}
+.cardst{background:#fff;border:4px solid var(--ink);border-radius:8px;box-shadow:9px 9px 0 rgba(255,127,168,.5);
+  padding:18px 16px;transform:rotate(-1.8deg)}
+.csH{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--pink)}
+.csQ{margin-top:10px;font-size:12px;line-height:1.9;color:var(--ink2);padding:11px;
+  border:3px dashed var(--pink);border-radius:6px}
+.attR{display:flex;align-items:flex-end;gap:9px;padding:11px 0}
+.attR .nm{font-size:12.5px;font-weight:700;width:54px;flex:none;color:var(--ink)}
+.attR .vbars{display:flex;gap:5px;align-items:flex-end}
+.vb{width:11px;height:22px;border:2px solid var(--ink);border-radius:2px;background:#F3ECF6}
+.vb.f{background:var(--pink)}
+.attR .pc{margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--dim)}
+.stime{margin-top:16px;background:#fff;border:3px solid var(--ink);border-radius:999px;padding:11px 16px;
+  display:flex;flex-direction:column;gap:5px;box-shadow:0 4px 0 var(--pink)}
+.stime .r{display:flex;justify-content:space-between;font-size:11px;color:#7A5F6C}
+.back{margin-top:24px;display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:13px;border-radius:999px;border:3px solid var(--ink);background:#fff;color:var(--ink);
+  font-size:12px;box-shadow:0 5px 0 var(--ink);cursor:pointer}
+.back:active{transform:translateY(5px);box-shadow:0 0 0 var(--ink)}
+
+/* 须知贴纸 */
+.slip{background:#fff;border:3px solid var(--ink);border-radius:6px;padding:14px 15px;margin-bottom:14px;
+  box-shadow:7px 7px 0 rgba(127,216,200,.7)}
+.slip:nth-child(1){transform:rotate(-1.4deg)}
+.slip:nth-child(2){transform:rotate(1.2deg);box-shadow:7px 7px 0 rgba(255,209,102,.75)}
+.slip:nth-child(3){transform:rotate(-.8deg);box-shadow:7px 7px 0 rgba(201,180,242,.75)}
+.slip .sn{display:inline-block;font-family:var(--mono);font-size:9px;background:var(--ink);color:#fff;
+  padding:3px 8px;border-radius:3px;margin-bottom:9px}
+.slip p{font-size:12px;line-height:1.95;color:var(--ink2)}
+
+/* 板评小票 */
+.tkp{background:#fff;border:3px solid var(--ink);border-radius:6px;padding:14px;margin-bottom:16px;
+  transform:rotate(1.6deg);box-shadow:8px 8px 0 rgba(201,180,242,.8)}
+.tkp:nth-child(2){transform:rotate(-1.3deg);box-shadow:8px 8px 0 rgba(255,209,102,.8)}
+.tkp .th{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--pink);margin-bottom:8px}
+.tkp .tb{font-size:12px;line-height:1.9;color:var(--ink2)}
+
+/* 结局卡 */
+.endcard{background:#fff;border:4px solid var(--ink);border-radius:10px;box-shadow:10px 10px 0 var(--yellow);
+  padding:22px 18px;text-align:center}
+.endcard .eh{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--pink)}
+.endcard .ebig{margin:12px 0 16px;font-size:26px;font-weight:700;letter-spacing:.14em;color:var(--ink)}
+.lks{display:flex;flex-direction:column;gap:9px;text-align:left}
+.lk{display:flex;justify-content:space-between;align-items:center;background:#fff;border:3px solid var(--ink);
+  border-radius:999px;padding:11px 15px;font-size:12px;color:var(--ink);text-decoration:none;
+  box-shadow:0 4px 0 var(--lilac)}
+.lk span{font-family:var(--mono);font-size:9.5px;color:var(--dim)}
+.mn{margin-top:14px;padding-top:12px;border-top:3px dashed #FFD3E3;font-size:12px;line-height:1.9;color:var(--ink2)}
+.ft{margin-top:12px;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--dim)}
+
+
+.flr{position:absolute;left:0;right:0;bottom:0;height:96px;pointer-events:none;z-index:0;
+  background-image:repeating-conic-gradient(rgba(255,127,168,.13) 0% 25%, transparent 0% 50%);
+  background-size:24px 24px;
+  -webkit-mask-image:linear-gradient(to top,#000 18%,transparent 92%);
+  mask-image:linear-gradient(to top,#000 18%,transparent 92%)}
 /* 星星彩蛋 */
 .star{position:fixed;right:14px;bottom:18px;z-index:7;width:44px;height:44px;border:3px solid var(--ink);
   border-radius:6px;background:var(--yellow);box-shadow:0 5px 0 var(--ink);display:flex;align-items:center;
@@ -324,128 +443,89 @@ body:before{
     <div class="hint blink" id="hint">拉一下摇杆 · 掉一颗给你</div>
     <button class="go" id="go">打开看看</button>
   </div>
+  <div class="flr"></div>
 </section>
 
-<!-- 02 主界面 -->
+<!-- 02 START 海报 -->
 <section class="screen" id="s2">
-  <div class="wrap s2">
-    <div class="alias" id="vAlias">MOXIAOHEI</div>
-    <div class="name" id="vName">黑酱</div>
-    <div class="brief" id="vBrief">在星夜里接住每一个走丢的人</div>
-    <div class="tags" id="vTags"></div>
-
-    <div class="btns tray" id="btns">
-      <div class="sbtn" data-go="s3">
-        <span class="num">01</span>
-        <span class="icon">
-          <svg viewBox="0 0 10 7" width="40" height="28" shape-rendering="crispEdges">
-            <g fill="#FF6B9E"><rect x="2" y="0" width="2" height="1"/><rect x="6" y="0" width="2" height="1"/>
-            <rect x="1" y="1" width="8" height="1"/><rect x="0" y="2" width="10" height="1"/>
-            <rect x="0" y="3" width="10" height="1"/><rect x="1" y="4" width="8" height="1"/>
-            <rect x="2" y="5" width="6" height="1"/><rect x="4" y="6" width="2" height="1"/></g>
-            <g fill="#FFC2D9"><rect x="2" y="1" width="2" height="1"/><rect x="3" y="2" width="2" height="1"/></g>
-          </svg>
-        </span>
-        <span class="lb">风格</span><span class="en">STYLE</span>
-      </div>
-      <div class="sbtn" data-go="s4">
-        <span class="num">02</span>
-        <span class="icon">
-          <svg viewBox="0 0 10 9" width="40" height="36" shape-rendering="crispEdges">
-            <g fill="#FFD166"><rect x="4" y="0" width="2" height="1"/><rect x="3" y="1" width="4" height="1"/>
-            <rect x="0" y="2" width="10" height="1"/><rect x="1" y="3" width="8" height="1"/>
-            <rect x="2" y="4" width="6" height="1"/><rect x="1" y="5" width="8" height="1"/>
-            <rect x="0" y="6" width="10" height="1"/><rect x="2" y="7" width="6" height="1"/>
-            <rect x="3" y="8" width="2" height="1"/></g>
-          </svg>
-        </span>
-        <span class="lb">须知</span><span class="en">NOTE</span>
-      </div>
-      <div class="sbtn" data-go="s5">
-        <span class="num">03</span>
-        <span class="icon">
-          <svg viewBox="0 0 10 8" width="38" height="30" shape-rendering="crispEdges">
-            <g fill="#7FD8C8"><rect x="0" y="0" width="10" height="1"/><rect x="0" y="1" width="10" height="1"/>
-            <rect x="0" y="2" width="10" height="1"/><rect x="0" y="3" width="10" height="1"/>
-            <rect x="0" y="4" width="8" height="1"/><rect x="0" y="5" width="6" height="1"/>
-            <rect x="0" y="6" width="4" height="1"/></g>
-            <g fill="#FFFFFF"><rect x="1" y="1" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/>
-            <rect x="5" y="1" width="1" height="1"/></g>
-          </svg>
-        </span>
-        <span class="lb">对话</span><span class="en">CHAT</span>
-      </div>
-      <div class="sbtn" data-go="s6">
-        <span class="num">04</span>
-        <span class="icon">
-          <svg viewBox="0 0 10 10" width="34" height="34" shape-rendering="crispEdges">
-            <g fill="#C9B4F2"><rect x="4" y="0" width="2" height="1"/><rect x="3" y="1" width="4" height="1"/>
-            <rect x="3" y="2" width="4" height="1"/><rect x="1" y="3" width="8" height="1"/>
-            <rect x="1" y="4" width="8" height="1"/><rect x="1" y="5" width="8" height="1"/>
-            <rect x="1" y="6" width="8" height="1"/><rect x="0" y="7" width="10" height="1"/>
-            <rect x="1" y="8" width="1" height="2"/><rect x="8" y="8" width="1" height="2"/></g>
-            <g fill="#FF88B0"><rect x="4" y="3" width="2" height="5"/><rect x="1" y="5" width="8" height="1"/></g>
-          </svg>
-        </span>
-        <span class="lb">板评</span><span class="en">REVIEW</span>
-      </div>
+  <div class="wrap st">
+    <div class="stposter">
+      <div class="stno">GACHA / NO.001</div>
+      <div class="stname" id="vName">黑酱</div>
+      <div class="stalias" id="vAlias">MOXIAOHEI</div>
+      <div class="sttags" id="vTags"></div>
     </div>
-
-    <div class="hint2 blink" id="hint2">先点【风格】那颗</div>
+    <div class="ststart" id="start">S T A R T</div>
+    <div class="sttip">按开始 · 她会先开口</div>
   </div>
+  <div class="flr"></div>
 </section>
 
-<!-- 03 风格 -->
+<!-- 03 对话主舞台 -->
 <section class="screen" id="s3">
-  <div class="wrap pw">
-    <div class="ph"><span class="t">风格</span><span class="e">STYLE</span><span class="n">NO.01</span></div>
-    <div class="panel pink">
-      <div class="quote"><span class="q">TODAY SAYS</span><span id="vOneline">今天想被谁接住，就投一枚币下去。</span></div>
-      <div id="vAttrs" style="margin-top:10px"></div>
+  <div class="wrap cw">
+    <div class="hud"><span><i class="dotl"></i>CHAT MODE</span><span id="hudN">01 / 03</span></div>
+    <div class="chatbox" id="vDlg"></div>
+    <div class="copt" id="vOpts"></div>
+    <div class="linkrow" id="vLinkRow"></div>
+    <div class="chint">· 选一句回她 ·</div>
+  </div>
+  <div class="flr"></div>
+</section>
+
+<!-- 04 风格（子页） -->
+<section class="screen sub" id="s4">
+  <div class="sw swpink">
+    <div class="wm">STYLE</div>
+    <div class="swinner">
+      <div class="cardst">
+        <div class="csH">GACHA CARD / 01</div>
+        <div class="csQ" id="vOneline">今天想被谁接住，就投一枚币下去。</div>
+        <div id="vAttrs" style="margin-top:8px"></div>
+      </div>
+      <div class="stime" id="vTime"></div>
+      <div class="back" data-back="1">&#9664; 回到对话</div>
     </div>
-    <div class="panel mint" id="vTime"></div>
-    <div class="next" data-next="s4">记住了 · 去看须知</div>
   </div>
+  <div class="flr"></div>
 </section>
 
-<!-- 04 须知 -->
-<section class="screen" id="s4">
-  <div class="wrap pw">
-    <div class="ph"><span class="t">须知</span><span class="e">NOTE</span><span class="n">NO.02</span></div>
-    <div id="vRules"></div>
-    <div class="next" data-next="s5">知道了 · 去聊两句</div>
+<!-- 05 须知（子页） -->
+<section class="screen sub" id="s5">
+  <div class="sw swmint">
+    <div class="wm">NOTE</div>
+    <div class="swinner" id="vRules"></div>
+    <div class="swinner" style="margin-top:6px"><div class="back" data-back="1">&#9664; 回到对话</div></div>
   </div>
+  <div class="flr"></div>
 </section>
 
-<!-- 05 对话 -->
-<section class="screen" id="s5">
-  <div class="wrap pw">
-    <div class="ph"><span class="t">对话</span><span class="e">CHAT</span><span class="n">NO.03</span></div>
-    <div class="panel sun">
-      <div class="dlg" id="vDlg"></div>
-      <div class="opts" id="vOpts"></div>
+<!-- 06 板评（子页） -->
+<section class="screen sub" id="s6">
+  <div class="sw swlil">
+    <div class="wm">REVIEW</div>
+    <div class="swinner" id="vNotes"></div>
+    <div class="swinner" style="margin-top:6px"><div class="back" data-back="1">&#9664; 回到对话</div></div>
+  </div>
+  <div class="flr"></div>
+</section>
+
+<!-- 07 结局卡 -->
+<section class="screen sub" id="s7">
+  <div class="sw swend">
+    <div class="wm">END</div>
+    <div class="swinner">
+      <div class="endcard">
+        <div class="eh">GACHA RESULT</div>
+        <div class="ebig">谢谢你来</div>
+        <div class="lks" id="vLinks"></div>
+        <div class="mn" id="vNote"></div>
+        <div class="ft" id="vFoot">GACHA · MOXIAOHEI</div>
+      </div>
+      <div class="back" data-back="1">&#9664; 回到对话</div>
     </div>
-    <div class="next" data-next="s6">继续 · 看看板评</div>
   </div>
-</section>
-
-<!-- 06 板评 -->
-<section class="screen" id="s6">
-  <div class="wrap pw">
-    <div class="ph"><span class="t">板评 · 话术</span><span class="e">REVIEW</span><span class="n">NO.04</span></div>
-    <div id="vNotes"></div>
-    <div class="next" data-next="s7">继续 · 尾声</div>
-  </div>
-</section>
-
-<!-- 07 尾声 -->
-<section class="screen" id="s7">
-  <div class="wrap pw">
-    <div class="ph"><span class="t">尾声</span><span class="e">THE END</span><span class="n">FIN</span></div>
-    <div class="lks" id="vLinks"></div>
-    <div class="mn" id="vNote"></div>
-    <div class="ft" id="vFoot">GACHA · MOXIAOHEI</div>
-  </div>
+  <div class="flr"></div>
 </section>
 
 <div class="star" id="star">
@@ -483,19 +563,18 @@ body:before{
     put($('vSub'), f.introSub || '扭蛋机 · 第 001 号');
     put($('vBig'), (f.faceBig || '').trim() || f.name || '幸运');
     put($('vFs'), f.brief || '');
-    put($('vFno'), 'NO.' + ((f.introSub || '').replace(/\D/g, '').slice(-3) || '001'));
     put($('vName'), f.name || '');
     put($('vAlias'), (f.alias || '').toUpperCase());
-    put($('vBrief'), f.brief || '');
-    put($('vFoot'), 'GACHA · ' + (f.alias || f.name || ''));
     put($('mark'), 'NO.' + (((f.introSub || '').replace(/\D/g, '').slice(-3)) || '001'));
     put($('vOneline'), (f.oneline || '').trim() || '今天想被谁接住，就投一枚币下去。');
+    put($('vNote'), f.scribble1 || '');
+    put($('vFoot'), 'GACHA · ' + (f.alias || f.name || ''));
 
     var tg = $('vTags');
     if (tg){
       tg.innerHTML = '';
-      (f.tags || []).forEach(function(t){
-        var d = document.createElement('span'); d.className = 'tg'; d.textContent = t; tg.appendChild(d);
+      (f.tags || []).forEach(function(x){
+        var d = document.createElement('span'); d.className = 'tg'; d.textContent = x; tg.appendChild(d);
       });
     }
 
@@ -504,18 +583,16 @@ body:before{
       at.innerHTML = '';
       var PCT = [100, 92, 84, 76];
       (f.style || []).forEach(function(n, i){
-        var row = document.createElement('div'); row.className = 'arow';
-        var ai = document.createElement('span'); ai.className = 'ai';
-        ai.textContent = ('0' + (i + 1)).slice(-2);
-        var an = document.createElement('span'); an.className = 'an'; an.textContent = n;
-        var bl = document.createElement('div'); bl.className = 'blocks';
-        var cnt = Math.round(PCT[i] / 20);
+        var row = document.createElement('div'); row.className = 'attR';
+        var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = n;
+        var vb = document.createElement('div'); vb.className = 'vbars';
+        var CNTS = [5, 4, 4, 3]; var cnt = CNTS[i] || 3;
         for (var k = 0; k < 5; k++){
-          var b = document.createElement('i'); b.className = 'bk' + (k < cnt ? ' f' : '');
-          bl.appendChild(b);
+          var b = document.createElement('i'); b.className = 'vb' + (k < cnt ? ' f' : '');
+          vb.appendChild(b);
         }
-        var ap = document.createElement('span'); ap.className = 'ap'; ap.textContent = PCT[i] + '%';
-        row.appendChild(ai); row.appendChild(an); row.appendChild(bl); row.appendChild(ap);
+        var pc = document.createElement('span'); pc.className = 'pc'; pc.textContent = PCT[i] + '%';
+        row.appendChild(nm); row.appendChild(vb); row.appendChild(pc);
         at.appendChild(row);
       });
     }
@@ -523,26 +600,24 @@ body:before{
     var tm = $('vTime');
     if (tm){
       tm.innerHTML = '';
-      var tl = document.createElement('div'); tl.className = 'tline';
       if (f.workday){ var r1 = document.createElement('div'); r1.className = 'r';
-        var a1 = document.createElement('span'); a1.textContent = '平日···';
+        var a1 = document.createElement('span'); a1.textContent = '平日';
         var b1 = document.createElement('span'); b1.textContent = f.workday;
-        r1.appendChild(a1); r1.appendChild(b1); tl.appendChild(r1); }
+        r1.appendChild(a1); r1.appendChild(b1); tm.appendChild(r1); }
       if (f.weekend){ var r2 = document.createElement('div'); r2.className = 'r';
-        var a2 = document.createElement('span'); a2.textContent = '周末···';
+        var a2 = document.createElement('span'); a2.textContent = '周末';
         var b2 = document.createElement('span'); b2.textContent = f.weekend;
-        r2.appendChild(a2); r2.appendChild(b2); tl.appendChild(r2); }
-      tm.appendChild(tl);
+        r2.appendChild(a2); r2.appendChild(b2); tm.appendChild(r2); }
     }
 
     var rl = $('vRules');
     if (rl){
       rl.innerHTML = '';
-      (f.rules || []).forEach(function(t, i){
-        var d = document.createElement('div'); d.className = 'tk';
-        var n = document.createElement('span'); n.className = 'n';
-        n.textContent = ('0' + (i + 1)).slice(-2);
-        var p = document.createElement('p'); p.textContent = t;
+      (f.rules || []).forEach(function(x, i){
+        var d = document.createElement('div'); d.className = 'slip';
+        var n = document.createElement('span'); n.className = 'sn';
+        n.textContent = '0' + (i + 1);
+        var p = document.createElement('p'); p.textContent = x;
         d.appendChild(n); d.appendChild(p); rl.appendChild(d);
       });
     }
@@ -550,13 +625,12 @@ body:before{
     var nt = $('vNotes');
     if (nt){
       nt.innerHTML = '';
-      [['REVIEW I · 内容', f.q1, 'p'], ['TALK II · 话术', f.q2, 'y']].forEach(function(q){
-        var box = document.createElement('div'); box.className = 'nt ' + q[2];
-        var pin = document.createElement('span'); pin.className = 'pin';
-        var hd = document.createElement('div'); hd.className = 'hd'; hd.textContent = q[0];
-        var bd = document.createElement('div'); bd.className = 'bd';
-        bd.textContent = (q[1] && q[1].text) ? q[1].text : '这张便签还空着，等你来写。';
-        box.appendChild(pin); box.appendChild(hd); box.appendChild(bd);
+      [['REVIEW / 内容', f.q1], ['TALK / 话术', f.q2]].forEach(function(q){
+        var box = document.createElement('div'); box.className = 'tkp';
+        var h = document.createElement('div'); h.className = 'th'; h.textContent = q[0];
+        var b = document.createElement('div'); b.className = 'tb';
+        b.textContent = (q[1] && q[1].text) ? q[1].text : '这张小票还空着，等你来写。';
+        box.appendChild(h); box.appendChild(b);
         nt.appendChild(box);
       });
     }
@@ -565,24 +639,23 @@ body:before{
     if (lk){
       lk.innerHTML = '';
       if ((f.links || []).length === 0){
-        var em = document.createElement('div');
-        em.className = 'lk'; em.style.justifyContent = 'center';
-        em.textContent = '这里还没放链接';
+        var em = document.createElement('div'); em.className = 'lk';
+        em.style.justifyContent = 'center'; em.textContent = '这里还没放链接';
         lk.appendChild(em);
       }
       (f.links || []).forEach(function(o){
         var a = document.createElement('a');
         a.className = 'lk'; a.href = o.url || '#'; a.target = '_blank';
-        var t1 = document.createElement('span'); t1.style.fontFamily = 'inherit';
-        t1.style.fontSize = '12px'; t1.style.color = '#3B3147'; t1.textContent = o.label || '链接';
+        var t1 = document.createElement('span');
+        t1.style.fontFamily = 'inherit'; t1.style.fontSize = '12px';
+        t1.style.color = '#3B3147'; t1.textContent = o.label || '链接';
         var t2 = document.createElement('span'); t2.textContent = 'GO →';
         a.appendChild(t1); a.appendChild(t2);
         lk.appendChild(a);
       });
     }
 
-    put($('vNote'), f.scribble1 || '');
-    buildDialogue(f);
+    buildChat(f);
     put($('eggBody'), (f.eggText || '').trim() || EGG_DEFAULT);
   }
 
@@ -596,20 +669,16 @@ body:before{
     if (to){ to.classList.add('on'); to.scrollTop = 0; }
     var bk = $('bk');
     if (bk) bk.classList.toggle('hide', id === 's1' || id === 's2');
-    if (id === 's2') dropBtns();
+    if (id === 's3'){ /* 保持聊天现场，不重建 */ }
   }
 
-  /* ---------- 主界面按钮入场 ---------- */
-  var seen = false;
-  function dropBtns(){
-    var t = $('btns'); if (!t) return;
-    t.classList.remove('in');
-    void t.offsetWidth;
-    t.classList.add('in');
-    t.classList.toggle('guide', !seen);
+  function wipeThen(id){
+    var w = $('wipe');
+    if (w){ w.classList.remove('run'); void w.offsetWidth; w.classList.add('run'); }
+    setTimeout(function(){ go(id); }, 280);
   }
 
-  /* ---------- 开机：拉摇杆 ---------- */
+  /* ---------- 开机 ---------- */
   var pulled = false;
   function playGacha(){
     if (pulled) return;
@@ -630,17 +699,14 @@ body:before{
     }, 1650);
   }
 
-  /* ---------- 点按钮：像素擦除转场 ---------- */
-  function openBtn(goTo){
-    seen = true;
-    var g = $('btns'); if (g) g.classList.remove('guide');
-    var w = $('wipe');
-    if (w){ w.classList.remove('run'); void w.offsetWidth; w.classList.add('run'); }
-    setTimeout(function(){ go(goTo); }, 300);
-  }
+  /* ---------- 对话：主线，信息靠按钮外链 ---------- */
+  var CH = { rounds: [], i: 0, box: null, opts: null, linkRow: null };
+  var LINKS = {
+    0: { go: 's4', label: '风格卡', tag: 'STYLE' },
+    1: { go: 's5', label: '须知贴纸', tag: 'NOTE' },
+    2: { go: 's6', label: '板评小票', tag: 'REVIEW' }
+  };
 
-  /* ---------- 对话 ---------- */
-  var ROUNDS = [], RI = 0, RBOX = null;
   function parseScript(f){
     var out = [], raw = (f.script || '').trim();
     if (raw){
@@ -665,64 +731,89 @@ body:before{
     return out;
   }
 
-  function bub(txt, side){
-    var row = document.createElement('div');
-    row.className = 'row' + (side === 'r' ? ' r' : '');
-    var av = document.createElement('span'); av.className = 'av';
-    var b = document.createElement('div'); b.className = 'bub'; b.textContent = txt;
-    row.appendChild(av); row.appendChild(b);
-    (RBOX || $('vDlg')).appendChild(row);
+  function bubble(txt, me){
+    var b = document.createElement('div');
+    b.className = 'cb' + (me ? ' me' : '');
+    b.textContent = txt;
+    CH.box.appendChild(b);
+    return b;
   }
 
-  function showRound(i){
-    var box = $('vDlg'), opts = $('vOpts');
-    if (!box || !opts) return;
-    if (i >= ROUNDS.length){ if (RBOX) RBOX.classList.add('past'); return; }
-    var r = ROUNDS[i];
-    if (RBOX) RBOX.classList.add('past');
-    RBOX = document.createElement('div'); RBOX.className = 'dr';
-    box.appendChild(RBOX);
-    bub(r.line, 'l');
-    opts.innerHTML = '';
+  function hud(){
+    var n = $('hudN');
+    if (n) n.textContent = ('0' + Math.min(CH.i + 1, CH.rounds.length)).slice(-2) + ' / ' + ('0' + CH.rounds.length).slice(-2);
+  }
+
+  function round(i){
+    CH.i = i;
+    CH.opts.innerHTML = '';
+    CH.linkRow.innerHTML = '';
+    if (i >= CH.rounds.length){ finish(); return; }
+    var r = CH.rounds[i];
+    bubble(r.line, false);
+    hud();
     setTimeout(function(){
       r.options.forEach(function(o){
         var b = document.createElement('div');
-        b.className = 'op'; b.textContent = o.label;
+        b.className = 'co'; b.textContent = o.label;
         b.onclick = function(){
           if (b.classList.contains('dim')) return;
-          [].forEach.call(opts.children, function(x){ x.classList.add('dim'); });
+          [].forEach.call(CH.opts.children, function(x){ x.classList.add('dim'); });
           b.classList.remove('dim'); b.classList.add('on');
-          if (o.reply) bub(o.reply, 'r');
-          setTimeout(function(){ opts.innerHTML = ''; showRound(i + 1); }, 900);
+          if (o.reply) bubble(o.reply, true);
+          setTimeout(function(){ round(i + 1); }, 850);
         };
-        opts.appendChild(b);
+        CH.opts.appendChild(b);
       });
-    }, 520);
+      var L = LINKS[i];
+      if (L){
+        var chip = document.createElement('div');
+        chip.className = 'lchip';
+        var t1 = document.createElement('b'); t1.textContent = L.tag;
+        var t2 = document.createElement('span'); t2.textContent = '查看' + L.label + ' →';
+        chip.appendChild(t1); chip.appendChild(t2);
+        chip.onclick = function(){ go(L.go); };
+        CH.linkRow.appendChild(chip);
+      }
+    }, 420);
   }
 
-  function buildDialogue(f){
-    var box = $('vDlg'), opts = $('vOpts');
-    if (!box) return;
-    box.innerHTML = ''; if (opts) opts.innerHTML = '';
-    RBOX = null; RI = 0;
-    ROUNDS = parseScript(f);
-    showRound(0);
+  function finish(){
+    var hint = document.querySelector('.chint'); if (hint) hint.style.display = 'none';
+    CH.opts.innerHTML = '';
+    CH.linkRow.innerHTML = '';
+    var box = document.createElement('div');
+    box.className = 'endblk';
+    var e1 = document.createElement('div'); e1.className = 'e1'; e1.textContent = 'CHAT END';
+    var e2 = document.createElement('div'); e2.className = 'e2'; e2.textContent = '聊到这儿了 · 扭蛋收好';
+    var b = document.createElement('div'); b.className = 'endbtn'; b.textContent = '看结局卡';
+    b.onclick = function(){ go('s7'); };
+    box.appendChild(e1); box.appendChild(e2); box.appendChild(b);
+    CH.linkRow.appendChild(box);
+  }
+
+  function buildChat(f){
+    CH.box = $('vDlg'); CH.opts = $('vOpts'); CH.linkRow = $('vLinkRow');
+    if (!CH.box) return;
+    CH.box.innerHTML = ''; CH.opts.innerHTML = ''; CH.linkRow.innerHTML = '';
+    CH.rounds = parseScript(f);
+    CH.i = 0;
+    round(0);
   }
 
   /* ---------- 事件 ---------- */
   if ($('machine')) $('machine').onclick = playGacha;
   if ($('joy')) $('joy').onclick = function(e){ if (e.stopPropagation) e.stopPropagation(); playGacha(); };
-  if ($('go')) $('go').onclick = function(){ go('s2'); };
+  if ($('go')) $('go').onclick = function(){ wipeThen('s2'); };
+  if ($('start')) $('start').onclick = function(){ wipeThen('s3'); };
 
-  [].forEach.call(document.querySelectorAll('.sbtn'), function(btn){
-    btn.onclick = function(){ openBtn(btn.getAttribute('data-go')); };
+  [].forEach.call(document.querySelectorAll('[data-back]'), function(el){
+    el.onclick = function(){ go('s3'); };
   });
 
-  [].forEach.call(document.querySelectorAll('.next'), function(n){
-    n.onclick = function(){ go(n.getAttribute('data-next')); };
-  });
-
-  if ($('bk')) $('bk').onclick = function(){ go('s2'); };
+  if ($('bk')) $('bk').onclick = function(){
+    go(cur === 's3' ? 's2' : 's3');
+  };
 
   if ($('star')) $('star').onclick = function(){ $('eggbox').classList.add('on'); };
   if ($('eggClose')) $('eggClose').onclick = function(){ $('eggbox').classList.remove('on'); };
@@ -732,7 +823,8 @@ body:before{
   if (CARD){ fill(CARD); }
   else {
     fill({ f: { name: '黑酱', alias: 'MoXiaoHei', brief: '在星夜里接住每一个走丢的人',
-      tags: ['光遇陪玩', '树洞', '夜行'], style: ['温柔', '慢热', '守时', '不失联'] } });
+      tags: ['光遇陪玩', '树洞', '夜行'], style: ['温柔', '慢热', '守时', '不失联'],
+      script: '第一次见你，是我在雨林里等一个不认路的人。\n跟着你走|那就别回头，路很长。\n先问一句|问吧，趁灯还亮着。\n只是路过|路过也算见过。' } });
   }
   go('s1');
 })();
